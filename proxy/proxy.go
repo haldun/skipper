@@ -20,17 +20,16 @@ import (
 
 const (
 	proxyBufferSize = 8192
-	proxyErrorFmt   = "proxy: %s"
 	unknownRouteID  = "_unknownroute_"
 
-	// Number of loops allowed by default.
+	// DefaultMaxLoopbacks is the number of loops allowed by default.
 	DefaultMaxLoopbacks = 9
 
-	// The default value set for http.Transport.MaxIdleConnsPerHost.
+	// DefaultIdleConnsPerHost is to set for http.Transport.MaxIdleConnsPerHost.
 	DefaultIdleConnsPerHost = 64
 
-	// The default period at which the idle connections are forcibly
-	// closed.
+	// DefaultCloseIdleConnsPeriod is the default period at which the idle
+	// connections are forcibly closed.
 	DefaultCloseIdleConnsPeriod = 20 * time.Second
 )
 
@@ -71,7 +70,6 @@ const (
 	OptionsInsecure         = Options(Insecure)
 	OptionsPreserveOriginal = Options(PreserveOriginal)
 	OptionsPreserveHost     = Options(PreserveHost)
-	OptionsDebug            = Options(Debug)
 )
 
 // Proxy initialization options.
@@ -353,7 +351,7 @@ func (p *Proxy) applyFiltersToRequest(f []*routing.RouteFilter, ctx *context) []
 		}
 	}
 
-	p.metrics.MeasureAllFiltersRequest(ctx.route.Id, filtersStart)
+	p.metrics.MeasureAllFiltersRequest(ctx.route.ID, filtersStart)
 	return filters
 }
 
@@ -380,7 +378,7 @@ func (p *Proxy) applyFiltersToResponse(filters []*routing.RouteFilter, ctx *cont
 		})
 	}
 
-	p.metrics.MeasureAllFiltersResponse(ctx.route.Id, filtersStart)
+	p.metrics.MeasureAllFiltersResponse(ctx.route.ID, filtersStart)
 }
 
 // addBranding overwrites any existing `X-Powered-By` or `Server` header from headerMap
@@ -456,7 +454,7 @@ func (p *Proxy) makeBackendRequest(ctx *context) (*http.Response, error) {
 
 	response, err := p.roundTripper.RoundTrip(req)
 	if err != nil {
-		log.Errorf("error during backend roundtrip: %s: %v", ctx.route.Id, err)
+		log.Errorf("error during backend roundtrip: %s: %v", ctx.route.ID, err)
 		if _, ok := err.(net.Error); ok {
 			err = &proxyError{
 				err:  err,
@@ -495,7 +493,7 @@ func (p *Proxy) do(ctx *context) error {
 	processedFilters := p.applyFiltersToRequest(ctx.route.Filters, ctx)
 
 	if ctx.deprecatedShunted() {
-		log.Debug("deprecated shunting detected in route: %s", ctx.route.Id)
+		log.Debug("deprecated shunting detected in route: %s", ctx.route.ID)
 		return &proxyError{handled: true}
 	} else if ctx.shunted() || ctx.route.Shunt || ctx.route.BackendType == eskip.ShuntBackend {
 		ctx.ensureDefaultResponse()
@@ -518,12 +516,12 @@ func (p *Proxy) do(ctx *context) error {
 		backendStart := time.Now()
 		rsp, err := p.makeBackendRequest(ctx)
 		if err != nil {
-			p.metrics.IncErrorsBackend(ctx.route.Id)
+			p.metrics.IncErrorsBackend(ctx.route.ID)
 			return err
 		}
 
 		ctx.setResponse(rsp, p.flags.PreserveOriginal())
-		p.metrics.MeasureBackend(ctx.route.Id, backendStart)
+		p.metrics.MeasureBackend(ctx.route.ID, backendStart)
 		p.metrics.MeasureBackendHost(ctx.route.Host, backendStart)
 	}
 
@@ -550,10 +548,10 @@ func (p *Proxy) serveResponse(ctx *context) {
 	ctx.responseWriter.WriteHeader(ctx.response.StatusCode)
 	err := copyStream(ctx.responseWriter.(flusherWriter), ctx.response.Body)
 	if err != nil {
-		p.metrics.IncErrorsStreaming(ctx.route.Id)
+		p.metrics.IncErrorsStreaming(ctx.route.ID)
 		log.Error("error while copying the response stream", err)
 	} else {
-		p.metrics.MeasureResponse(ctx.response.StatusCode, ctx.request.Method, ctx.route.Id, start)
+		p.metrics.MeasureResponse(ctx.response.StatusCode, ctx.request.Method, ctx.route.ID, start)
 	}
 }
 
@@ -576,7 +574,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if perr, ok := err.(*proxyError); !ok || !perr.handled {
 			id := unknownRouteID
 			if ctx.route != nil {
-				id = ctx.route.Id
+				id = ctx.route.ID
 			}
 
 			code := http.StatusInternalServerError
@@ -610,7 +608,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	p.serveResponse(ctx)
 	p.metrics.MeasureServe(
-		ctx.route.Id,
+		ctx.route.ID,
 		r.Host,
 		r.Method,
 		ctx.response.StatusCode,

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+
 	"github.com/zalando/skipper/eskip"
 	etcdclient "github.com/zalando/skipper/etcd"
 )
@@ -12,7 +13,7 @@ type writeClient interface {
 	DeleteAllIf(routes []*eskip.Route, cond eskip.RoutePredicate) error
 }
 
-var invalidOutput = errors.New("invalid output")
+var errInvalidOutput = errors.New("invalid output")
 
 func createWriteClient(out *medium) (writeClient, error) {
 	// no output, no client
@@ -29,5 +30,5 @@ func createWriteClient(out *medium) (writeClient, error) {
 			Prefix:    out.path,
 			Insecure:  insecure})
 	}
-	return nil, invalidOutput
+	return nil, errInvalidOutput
 }

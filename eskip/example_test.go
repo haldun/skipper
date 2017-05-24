@@ -59,7 +59,7 @@ func Example() {
 	format := "%v: [match] -> [%v filter(s) ->] <%v> \"%v\"\n"
 	fmt.Println("Parsed routes:")
 	for _, r := range routes {
-		fmt.Printf(format, r.Id, len(r.Filters), r.BackendType, r.Backend)
+		fmt.Printf(format, r.ID, len(r.Filters), r.BackendType, r.Backend)
 	}
 
 	// output:
@@ -111,7 +111,7 @@ func ExampleNetworkRoute() {
 	r := routes[0]
 
 	fmt.Println("Parsed a route:")
-	fmt.Printf("id: %v\n", r.Id)
+	fmt.Printf("id: %v\n", r.ID)
 	fmt.Printf("match regexp: %s\n", r.PathRegexps[0])
 	fmt.Printf("# of filters: %v\n", len(r.Filters))
 	fmt.Printf("backend type: %v\n", r.BackendType)
@@ -139,7 +139,7 @@ func ExampleLoopbackRoute() {
 	r := routes[0]
 
 	fmt.Println("Parsed a route:")
-	fmt.Printf("id: %v\n", r.Id)
+	fmt.Printf("id: %v\n", r.ID)
 	fmt.Printf("match regexp: %s\n", r.PathRegexps[0])
 	fmt.Printf("# of filters: %v\n", len(r.Filters))
 	fmt.Printf("backend type: %v\n", r.BackendType)
@@ -167,7 +167,7 @@ func ExampleShuntRoute() {
 	r := routes[0]
 
 	fmt.Println("Parsed a route:")
-	fmt.Printf("id: %v\n", r.Id)
+	fmt.Printf("id: %v\n", r.ID)
 	fmt.Printf("match regexp: %s\n", r.PathRegexps[0])
 	fmt.Printf("# of filters: %v\n", len(r.Filters))
 	fmt.Printf("backend type: %v\n", r.BackendType)

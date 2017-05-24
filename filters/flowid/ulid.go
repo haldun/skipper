@@ -45,14 +45,14 @@ func (g *ulidGenerator) Generate() (string, error) {
 
 // MustGenerate behaves like Generate but panics in case of failure
 func (g *ulidGenerator) MustGenerate() string {
-	flowId, err := g.Generate()
+	flowID, err := g.Generate()
 	if err != nil {
 		panic(err)
 	}
-	return flowId
+	return flowID
 }
 
 // IsValid checks if the given flowId follows the format of this generator
-func (g *ulidGenerator) IsValid(flowId string) bool {
-	return len(flowId) >= MinLength && len(flowId) <= MaxLength && ulidFlowIDRegex.MatchString(flowId)
+func (g *ulidGenerator) IsValid(flowID string) bool {
+	return len(flowID) >= MinLength && len(flowID) <= MaxLength && ulidFlowIDRegex.MatchString(flowID)
 }

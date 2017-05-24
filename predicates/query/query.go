@@ -94,15 +94,13 @@ func (p *predicate) Match(r *http.Request) bool {
 	case matches:
 		if !ok {
 			return false
-		} else {
-			for _, v := range vals {
-				if p.valueExp.MatchString(v) {
-					return true
-				}
-			}
-			return false
 		}
-
+		for _, v := range vals {
+			if p.valueExp.MatchString(v) {
+				return true
+			}
+		}
+		return false
 	}
 
 	return false

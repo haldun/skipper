@@ -122,8 +122,8 @@ func TestIdleConns(t *testing.T) {
 			proxy.Params{
 				IdleConnectionsPerHost: ti.idleConns,
 				CloseIdleConnsPeriod:   ti.closeIdleConns},
-			&eskip.Route{Id: "s0", Path: "/s0", Backend: s0.URL},
-			&eskip.Route{Id: "s1", Path: "/s1", Backend: s1.URL})
+			&eskip.Route{ID: "s0", Path: "/s0", Backend: s0.URL},
+			&eskip.Route{ID: "s1", Path: "/s1", Backend: s1.URL})
 		defer p.Close()
 
 		request := func(path string, doc []byte) {

@@ -23,15 +23,15 @@ import (
 )
 
 const (
-	clientJson = `{"client_id": "theclientid", "client_secret": "clientsecret"}`
-	userJson   = `{"application_username": "appusername", "application_password": "apppassword"}`
+	clientJSON = `{"client_id": "theclientid", "client_secret": "clientsecret"}`
+	userJSON   = `{"application_username": "appusername", "application_password": "apppassword"}`
 	testToken  = "test token"
 )
 
 func setup() error {
-	err := createFileWithContent("client.json", clientJson)
+	err := createFileWithContent("client.json", clientJSON)
 	if err == nil {
-		err = createFileWithContent("user.json", userJson)
+		err = createFileWithContent("user.json", userJSON)
 	}
 
 	return err
@@ -100,7 +100,7 @@ func TestGetClient(t *testing.T) {
 
 	oc := New("", "", "")
 	client, _ := oc.getClientCredentials()
-	if client.Id != "theclientid" {
+	if client.ID != "theclientid" {
 		t.Error("the client id is not correct")
 	}
 	if client.Secret != "clientsecret" {

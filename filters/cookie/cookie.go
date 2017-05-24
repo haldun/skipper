@@ -48,7 +48,7 @@ const (
 	ResponseCookieFilterName   = "responseCookie"
 	ResponseJSCookieFilterName = "jsCookie"
 	ChangeOnlyArg              = "change-only"
-	SetCookieHttpHeader        = "Set-Cookie"
+	SetCookieHTTPHeader        = "Set-Cookie"
 )
 
 type direction int
@@ -185,7 +185,7 @@ func setCookie(ctx filters.FilterContext, name, value string, ttl time.Duration,
 		Path:     "/",
 		MaxAge:   int(ttl.Seconds())}
 
-	ctx.Response().Header.Add(SetCookieHttpHeader, c.String())
+	ctx.Response().Header.Add(SetCookieHTTPHeader, c.String())
 }
 
 func configSetCookie(jscookie bool) func(filters.FilterContext, string, string, time.Duration) {

@@ -151,13 +151,13 @@ func String(routes ...*Route) string {
 }
 
 func Print(pretty bool, routes ...*Route) string {
-	if len(routes) == 1 && routes[0].Id == "" {
+	if len(routes) == 1 && routes[0].ID == "" {
 		return routes[0].Print(pretty)
 	}
 
 	rs := make([]string, len(routes))
 	for i, r := range routes {
-		rs[i] = fmt.Sprintf("%s: %s", r.Id, r.Print(pretty))
+		rs[i] = fmt.Sprintf("%s: %s", r.ID, r.Print(pretty))
 	}
 
 	return strings.Join(rs, ";\n")

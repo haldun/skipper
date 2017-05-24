@@ -47,9 +47,8 @@ func NewRedirectTo() filters.Spec { return &redirect{deprecated: false} }
 func (spec *redirect) Name() string {
 	if spec.deprecated {
 		return RedirectName
-	} else {
-		return RedirectToName
 	}
+	return RedirectToName
 }
 
 // Creates an instance of the redirect filter.
@@ -133,24 +132,24 @@ func Redirect(ctx filters.FilterContext, code int, location *url.URL) {
 		Header:     http.Header{"Location": []string{u}}})
 }
 
-func (f *redirect) Request(ctx filters.FilterContext) {
-	if f.deprecated {
+func (spec *redirect) Request(ctx filters.FilterContext) {
+	if spec.deprecated {
 		return
 	}
 
-	Redirect(ctx, f.code, f.location)
+	Redirect(ctx, spec.code, spec.location)
 }
 
 // Sets the status code and the location header of the response. Marks the
 // request served.
-func (f *redirect) Response(ctx filters.FilterContext) {
-	if !f.deprecated {
+func (spec *redirect) Response(ctx filters.FilterContext) {
+	if !spec.deprecated {
 		return
 	}
 
-	u := getLocation(ctx, f.location)
+	u := getLocation(ctx, spec.location)
 	w := ctx.ResponseWriter()
 	w.Header().Set("Location", u)
-	w.WriteHeader(f.code)
+	w.WriteHeader(spec.code)
 	ctx.MarkServed()
 }

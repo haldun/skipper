@@ -11,25 +11,25 @@ import (
 )
 
 const (
-	// Name of the builtin path predicate.
+	// PathName is name of the builtin path predicate.
 	// (See more details about the Path and PathSubtree predicates
 	// at https://godoc.org/github.com/zalando/skipper/eskip)
 	PathName = "Path"
 
-	// Name of the builtin path subtree predicate.
+	// PathSubtreeName is name of the builtin path subtree predicate.
 	// (See more details about the Path and PathSubtree predicates
 	// at https://godoc.org/github.com/zalando/skipper/eskip)
 	PathSubtreeName = "PathSubtree"
 )
 
-// Control flags for route matching.
+// MatchingOptions is the control flags for route matching.
 type MatchingOptions uint
 
 const (
-	// All options are default.
+	// MatchingOptionsNone makes all options are default.
 	MatchingOptionsNone MatchingOptions = 0
 
-	// Ignore trailing slash in paths.
+	// IgnoreTrailingSlash ignores trailing slash in paths.
 	IgnoreTrailingSlash MatchingOptions = 1 << iota
 )
 
@@ -64,7 +64,7 @@ type PredicateSpec interface {
 	Create([]interface{}) (Predicate, error)
 }
 
-// Initialization options for routing.
+// Options for routing.
 type Options struct {
 
 	// Registry containing the available filter
@@ -106,7 +106,7 @@ type Options struct {
 	Log logging.Logger
 }
 
-// Filter contains extensions to generic filter
+// RouteFilter contains extensions to generic filter
 // interface, serving mainly logging/monitoring
 // purpose.
 type RouteFilter struct {
@@ -145,7 +145,7 @@ type Routing struct {
 	quit    chan struct{}
 }
 
-// Initializes a new routing instance, and starts listening for route
+// New initializes a new routing instance, and starts listening for route
 // definition updates.
 func New(o Options) *Routing {
 	if o.Log == nil {
@@ -175,7 +175,7 @@ func (r *Routing) startReceivingUpdates(o Options) {
 	}()
 }
 
-// Matches a request in the current routing tree.
+// Route matches a request in the current routing tree.
 //
 // If the request matches a route, returns the route and a map of
 // parameters constructed from the wildcard parameters in the path
@@ -185,7 +185,7 @@ func (r *Routing) Route(req *http.Request) (*Route, map[string]string) {
 	return m.match(req)
 }
 
-// Closes routing, stops receiving routes.
+// Close closes routing, stops receiving routes.
 func (r *Routing) Close() {
 	close(r.quit)
 }

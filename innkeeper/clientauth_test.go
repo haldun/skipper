@@ -16,12 +16,12 @@ func TestCreateInnkeeperAuthenticationFixedToken(t *testing.T) {
 
 func TestCreateInnkeeperAuthenticationClient(t *testing.T) {
 	options := AuthOptions{InnkeeperAuthToken: "",
-		OAuthCredentialsDir: "dir",
-		OAuthUrl:            "url",
-		OAuthScope:          "scope"}
+		OAuthCredentialsDir:                   "dir",
+		OAuthURL:                              "url",
+		OAuthScope:                            "scope"}
 	auth := CreateInnkeeperAuthentication(options)
 
-	if _, ok := auth.(*oauth.OAuthClient); !ok {
+	if _, ok := auth.(*oauth.Client); !ok {
 		t.Error("wrong authentication client type")
 	}
 }

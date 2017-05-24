@@ -112,15 +112,15 @@ func (spec *modQuery) CreateFilter(config []interface{}) (filters.Filter, error)
 }
 
 // Modifies the query of a request.
-func (f *modQuery) Request(ctx filters.FilterContext) {
+func (spec *modQuery) Request(ctx filters.FilterContext) {
 	req := ctx.Request()
 	params := req.URL.Query()
 
-	switch f.behavior {
+	switch spec.behavior {
 	case drop:
-		params.Del(f.name.Apply(ctx.PathParam))
+		params.Del(spec.name.Apply(ctx.PathParam))
 	case set:
-		params.Set(f.name.Apply(ctx.PathParam), f.value.Apply(ctx.PathParam))
+		params.Set(spec.name.Apply(ctx.PathParam), spec.value.Apply(ctx.PathParam))
 	default:
 		panic("unspecified behavior")
 	}
@@ -129,4 +129,4 @@ func (f *modQuery) Request(ctx filters.FilterContext) {
 }
 
 // Noop.
-func (_ *modQuery) Response(_ filters.FilterContext) {}
+func (*modQuery) Response(_ filters.FilterContext) {}

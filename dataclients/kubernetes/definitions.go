@@ -86,7 +86,7 @@ type httpRule struct {
 
 type rule struct {
 	Host string    `json:"host"`
-	Http *httpRule `json:"http"`
+	HTTP *httpRule `json:"http"`
 }
 
 type ingressSpec struct {

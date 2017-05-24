@@ -118,19 +118,18 @@ type Client struct {
 }
 
 var (
-	missingEtcdEndpoint     = errors.New("missing etcd endpoint")
-	missingRouteId          = errors.New("missing route id")
-	invalidNode             = errors.New("invalid node")
-	unexpectedHttpResponse  = errors.New("unexpected http response")
-	notFound                = errors.New("not found")
-	missingEtcdIndex        = errors.New("missing etcd index")
-	invalidResponseDocument = errors.New("invalid response document")
+	errMissingEtcdEndpoint     = errors.New("missing etcd endpoint")
+	errMissingRouteID          = errors.New("missing route id")
+	errInvalidNode             = errors.New("invalid node")
+	errUnexpectedHTTPResponse  = errors.New("unexpected http response")
+	errNotFound                = errors.New("not found")
+	errInvalidResponseDocument = errors.New("invalid response document")
 )
 
 // Creates a new Client with the provided options.
 func New(o Options) (*Client, error) {
 	if len(o.Endpoints) == 0 {
-		return nil, missingEtcdEndpoint
+		return nil, errMissingEtcdEndpoint
 	}
 
 	if o.Timeout == 0 {
@@ -224,7 +223,7 @@ func parseResponse(rsp *http.Response) (*response, error) {
 	}
 
 	if r.Node == nil || r.Node.Key == "" {
-		return nil, invalidResponseDocument
+		return nil, errInvalidResponseDocument
 	}
 
 	r.etcdIndex, err = strconv.ParseUint(rsp.Header.Get(etcdIndexHeader), 10, 64)
@@ -233,16 +232,16 @@ func parseResponse(rsp *http.Response) (*response, error) {
 
 // Converts a non-success http status code into an in-memory error object.
 // As the second argument, returns true in case of error.
-func httpError(code int) (error, bool) {
+func httpError(code int) (bool, error) {
 	if code == http.StatusNotFound {
-		return notFound, true
+		return true, errNotFound
 	}
 
 	if code < http.StatusOK || code >= http.StatusMultipleChoices {
-		return unexpectedHttpResponse, true
+		return true, errUnexpectedHTTPResponse
 	}
 
-	return nil, false
+	return false, nil
 }
 
 // Makes a request to an available etcd endpoint, with retries in case of
@@ -271,7 +270,7 @@ func (c *Client) etcdRequest(method, path, data string) (*response, error) {
 
 	defer rsp.Body.Close()
 
-	if err, hasErr := httpError(rsp.StatusCode); hasErr {
+	if hasErr, err := httpError(rsp.StatusCode); hasErr {
 		return nil, err
 	}
 
@@ -291,7 +290,7 @@ func (c *Client) etcdGetUpdates() (*response, error) {
 }
 
 func (c *Client) etcdSet(r *eskip.Route) error {
-	_, err := c.etcdRequest("PUT", c.routesRoot+"/"+r.Id, r.String())
+	_, err := c.etcdRequest("PUT", c.routesRoot+"/"+r.ID, r.String())
 	return err
 }
 
@@ -347,7 +346,7 @@ func parseRoutes(data map[string]string) []*eskip.RouteInfo {
 			info.ParseError = err
 		}
 
-		info.Id = id
+		info.ID = id
 		allInfo = append(allInfo, info)
 	}
 
@@ -362,7 +361,7 @@ func infoToRoutesLogged(info []*eskip.RouteInfo) []*eskip.Route {
 		if ri.ParseError == nil {
 			routes = append(routes, &ri.Route)
 		} else {
-			log.Println("error while parsing routes", ri.Id, ri.ParseError)
+			log.Println("error while parsing routes", ri.ID, ri.ParseError)
 		}
 	}
 
@@ -373,7 +372,7 @@ func infoToRoutesLogged(info []*eskip.RouteInfo) []*eskip.Route {
 // or the parsing error in case of failure.
 func (c *Client) LoadAndParseAll() ([]*eskip.RouteInfo, error) {
 	response, err := c.etcdGet()
-	if err == notFound {
+	if err == errNotFound {
 		return nil, nil
 	}
 
@@ -382,7 +381,7 @@ func (c *Client) LoadAndParseAll() ([]*eskip.RouteInfo, error) {
 	}
 
 	if !response.Node.Dir {
-		return nil, invalidNode
+		return nil, errInvalidNode
 	}
 
 	data, etcdIndex := c.iterateNodes(response.Node, 0)
@@ -453,8 +452,8 @@ func (c *Client) LoadUpdate() ([]*eskip.Route, []string, error) {
 
 // Inserts or updates a route in etcd.
 func (c *Client) Upsert(r *eskip.Route) error {
-	if r.Id == "" {
-		return missingRouteId
+	if r.ID == "" {
+		return errMissingRouteID
 	}
 
 	return c.etcdSet(r)
@@ -463,11 +462,11 @@ func (c *Client) Upsert(r *eskip.Route) error {
 // Deletes a route from etcd.
 func (c *Client) Delete(id string) error {
 	if id == "" {
-		return missingRouteId
+		return errMissingRouteID
 	}
 
 	err := c.etcdDelete(id)
-	if err == notFound {
+	if err == errNotFound {
 		err = nil
 	}
 
@@ -476,7 +475,7 @@ func (c *Client) Delete(id string) error {
 
 func (c *Client) UpsertAll(routes []*eskip.Route) error {
 	for _, r := range routes {
-		r.Id = eskip.GenerateIfNeeded(r.Id)
+		r.ID = eskip.GenerateIfNeeded(r.ID)
 		err := c.Upsert(r)
 		if err != nil {
 			return err
@@ -492,7 +491,7 @@ func (c *Client) DeleteAllIf(routes []*eskip.Route, cond eskip.RoutePredicate) e
 			continue
 		}
 
-		err := c.Delete(r.Id)
+		err := c.Delete(r.ID)
 		if err != nil {
 			return err
 		}

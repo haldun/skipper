@@ -57,7 +57,7 @@ func (er *errorReader) Read(b []byte) (int, error) {
 }
 
 func setHeaders(to, from http.Header) {
-	for k, _ := range to {
+	for k := range to {
 		delete(to, k)
 	}
 
@@ -78,7 +78,7 @@ func decoder(enc string, r io.Reader) io.Reader {
 	case "deflate":
 		return flate.NewReader(r)
 	default:
-		panic(unsupportedEncoding)
+		panic(errUnsupportedEncoding)
 	}
 }
 

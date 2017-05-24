@@ -110,17 +110,17 @@ func (spec *modPath) CreateFilter(config []interface{}) (filters.Filter, error) 
 }
 
 // Modifies the path with regexp.ReplaceAllString.
-func (f *modPath) Request(ctx filters.FilterContext) {
+func (spec *modPath) Request(ctx filters.FilterContext) {
 	req := ctx.Request()
-	switch f.behavior {
+	switch spec.behavior {
 	case regexpReplace:
-		req.URL.Path = f.rx.ReplaceAllString(req.URL.Path, f.replacement)
+		req.URL.Path = spec.rx.ReplaceAllString(req.URL.Path, spec.replacement)
 	case fullReplace:
-		req.URL.Path = f.template.Apply(ctx.PathParam)
+		req.URL.Path = spec.template.Apply(ctx.PathParam)
 	default:
 		panic("unspecified behavior")
 	}
 }
 
 // Noop.
-func (_ *modPath) Response(_ filters.FilterContext) {}
+func (spec *modPath) Response(_ filters.FilterContext) {}

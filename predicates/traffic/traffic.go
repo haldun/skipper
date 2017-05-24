@@ -135,7 +135,7 @@ func (p *predicate) Match(r *http.Request) bool {
 
 	if c, err := r.Cookie(p.trafficGroupCookie); err == nil {
 		return c.Value == p.trafficGroup
-	} else {
-		return p.takeChance()
 	}
+
+	return p.takeChance()
 }

@@ -72,7 +72,7 @@ func innkeeperServer(data []*routeData) *httptest.Server {
 }
 
 func checkDoc(t *testing.T, rs []*eskip.Route, ds []string, d []*routeData) bool {
-	check, eds, _ := convertJsonToEskip(d, nil, nil)
+	check, eds, _ := convertJSONToEskip(d, nil, nil)
 
 	if len(rs) != len(check) {
 		t.Error("doc lengths do not match", len(rs), len(check))
@@ -80,7 +80,7 @@ func checkDoc(t *testing.T, rs []*eskip.Route, ds []string, d []*routeData) bool
 	}
 
 	for i, r := range rs {
-		if r.Id != check[i].Id {
+		if r.ID != check[i].ID {
 			t.Error("doc id does not match")
 			return false
 		}
@@ -290,19 +290,19 @@ func TestConvertDoc(t *testing.T) {
 		t.Error(append([]interface{}{"failed to convert data", left, right}, msg...)...)
 	}
 
-	rs, deleted, lastChange := convertJsonToEskip(testData, nil, nil)
+	rs, deleted, lastChange := convertJSONToEskip(testData, nil, nil)
 
 	test(len(rs), 2)
 	if failed {
 		return
 	}
 
-	test(rs[0].Id, "route1")
+	test(rs[0].ID, "route1")
 	test(rs[0].Path, "/")
 	test(rs[0].Shunt, false)
 	test(rs[0].Backend, "https://example.org:443")
 
-	test(rs[1].Id, "route4")
+	test(rs[1].ID, "route4")
 	test(rs[1].Path, "/catalog")
 	test(rs[1].Shunt, false)
 	test(rs[1].Backend, "https://catalog.example.org:443")

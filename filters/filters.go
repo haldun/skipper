@@ -56,7 +56,7 @@ type FilterContext interface {
 
 	// Gives filters access to the backend url specified in the route or an empty
 	// value in case it's a shunt or loopback
-	BackendUrl() string
+	BackendURL() string
 
 	// Returns the host that will be set for the outgoing proxy request as the
 	// 'Host' header.

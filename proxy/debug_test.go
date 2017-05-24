@@ -24,7 +24,7 @@ func TestDebug(t *testing.T) {
 		"full doc",
 		debugInfo{
 			route: &eskip.Route{
-				Id:         "testRoute",
+				ID:         "testRoute",
 				Path:       "/hello",
 				Backend:    "https://www.example.org",
 				Predicates: []*eskip.Predicate{{"Test", []interface{}{3.14, "hello"}}},
@@ -51,7 +51,7 @@ func TestDebug(t *testing.T) {
 				Header:     http.Header{"X-Test-Response-Header": []string{"test-response-header-value"}},
 				Body:       ioutil.NopCloser(bytes.NewBufferString("response body"))}},
 		debugDocument{
-			RouteId: "testRoute",
+			RouteID: "testRoute",
 			Route: (&eskip.Route{
 				Path: "/hello", Backend: "https://www.example.org",
 				Predicates: []*eskip.Predicate{{"Test", []interface{}{3.14, "hello"}}},
@@ -64,14 +64,14 @@ func TestDebug(t *testing.T) {
 				{"filter1", []interface{}{float64(-42), `ap"argvalue`}}},
 			Incoming: &debugRequest{
 				Method:        "OPTIONS",
-				Uri:           "/testuri",
+				URI:           "/testuri",
 				Proto:         "HTTP/1.1",
 				Header:        http.Header{"X-Test-Header": []string{"test-header-value"}},
 				Host:          "test.example.org",
 				RemoteAddress: "::1"},
 			Outgoing: &debugRequest{
 				Method: "HEAD",
-				Uri:    "/testuri2",
+				URI:    "/testuri2",
 				Proto:  "HTTP/1.1",
 				Header: http.Header{"X-Test-Header-2": []string{"test-header-value-2"}},
 				Host:   "www.example.org"},
@@ -95,7 +95,7 @@ func TestDebug(t *testing.T) {
 		debugDocument{
 			Incoming: &debugRequest{
 				Method:        "OPTIONS",
-				Uri:           "/testuri",
+				URI:           "/testuri",
 				Proto:         "HTTP/1.1",
 				Header:        http.Header{"X-Test-Header": []string{"test-header-value"}},
 				Host:          "test.example.org",
@@ -117,7 +117,7 @@ func TestDebug(t *testing.T) {
 		debugDocument{
 			Incoming: &debugRequest{
 				Method:        "OPTIONS",
-				Uri:           "/testuri",
+				URI:           "/testuri",
 				Proto:         "HTTP/1.1",
 				Header:        http.Header{"X-Test-Header": []string{"test-header-value"}},
 				Host:          "test.example.org",
@@ -136,7 +136,7 @@ func TestDebug(t *testing.T) {
 		debugDocument{
 			Incoming: &debugRequest{
 				Method:        "OPTIONS",
-				Uri:           "/testuri",
+				URI:           "/testuri",
 				Proto:         "HTTP/1.1",
 				Header:        http.Header{"X-Test-Header": []string{"test-header-value"}},
 				Host:          "test.example.org",
@@ -217,7 +217,7 @@ func TestDebug(t *testing.T) {
 				t.Error(ti.msg, "failed to convert method")
 			}
 
-			if got.Uri != expect.Uri {
+			if got.URI != expect.URI {
 				t.Error(ti.msg, "failed to convert request uri")
 			}
 
@@ -238,7 +238,7 @@ func TestDebug(t *testing.T) {
 
 		got := convertDebugInfo(&ti.in)
 
-		if got.RouteId != ti.expect.RouteId {
+		if got.RouteID != ti.expect.RouteID {
 			t.Error(ti.msg, "failed to convert route id")
 		}
 

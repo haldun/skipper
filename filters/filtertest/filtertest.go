@@ -39,13 +39,13 @@ type Context struct {
 	FServedWithResponse bool
 	FParams             map[string]string
 	FStateBag           map[string]interface{}
-	FBackendUrl         string
+	FBackendURL         string
 	FOutgoingHost       string
 }
 
-func (spec *Filter) Name() string                    { return spec.FilterName }
-func (f *Filter) Request(ctx filters.FilterContext)  {}
-func (f *Filter) Response(ctx filters.FilterContext) {}
+func (spec *Filter) Name() string                       { return spec.FilterName }
+func (spec *Filter) Request(ctx filters.FilterContext)  {}
+func (spec *Filter) Response(ctx filters.FilterContext) {}
 
 func (fc *Context) ResponseWriter() http.ResponseWriter { return fc.FResponseWriter }
 func (fc *Context) Request() *http.Request              { return fc.FRequest }
@@ -56,7 +56,7 @@ func (fc *Context) PathParam(key string) string         { return fc.FParams[key]
 func (fc *Context) StateBag() map[string]interface{}    { return fc.FStateBag }
 func (fc *Context) OriginalRequest() *http.Request      { return nil }
 func (fc *Context) OriginalResponse() *http.Response    { return nil }
-func (fc *Context) BackendUrl() string                  { return fc.FBackendUrl }
+func (fc *Context) BackendURL() string                  { return fc.FBackendURL }
 func (fc *Context) OutgoingHost() string                { return fc.FOutgoingHost }
 func (fc *Context) SetOutgoingHost(h string)            { fc.FOutgoingHost = h }
 func (fc *Context) Serve(resp *http.Response) {

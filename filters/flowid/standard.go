@@ -1,14 +1,13 @@
 package flowid
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"regexp"
 )
 
 const (
-	flowIdAlphabet  = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+"
+	flowIDAlphabet  = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+"
 	alphabetBitMask = 63
 	MaxLength       = 64
 	MinLength       = 8
@@ -16,7 +15,7 @@ const (
 )
 
 var (
-	ErrInvalidLen       = errors.New(fmt.Sprintf("Invalid length. Must be between %d and %d", MinLength, MaxLength))
+	ErrInvalidLen       = fmt.Errorf("Invalid length. Must be between %d and %d", MinLength, MaxLength)
 	standardFlowIDRegex = regexp.MustCompile(`^[0-9a-zA-Z+-]+$`)
 )
 
@@ -45,7 +44,7 @@ func (g *standardGenerator) Generate() (string, error) {
 		b := rand.Int63()
 		for e := 0; e < 10 && i+e < g.length; e++ {
 			c := byte(b>>uint(6*e)) & alphabetBitMask // 6 bits only
-			u[i+e] = flowIdAlphabet[c]
+			u[i+e] = flowIDAlphabet[c]
 		}
 	}
 
@@ -61,7 +60,7 @@ func (g *standardGenerator) MustGenerate() string {
 	return id
 }
 
-// IsValid checks if the given flowId follows the format of this generator
-func (g *standardGenerator) IsValid(flowId string) bool {
-	return len(flowId) >= MinLength && len(flowId) <= MaxLength && standardFlowIDRegex.MatchString(flowId)
+// IsValid checks if the given flowID follows the format of this generator
+func (g *standardGenerator) IsValid(flowID string) bool {
+	return len(flowID) >= MinLength && len(flowID) <= MaxLength && standardFlowIDRegex.MatchString(flowID)
 }

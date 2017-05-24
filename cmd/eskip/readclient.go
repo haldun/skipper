@@ -1,13 +1,14 @@
 package main
 
 import (
+	"io"
+	"io/ioutil"
+	"os"
+
 	"github.com/zalando/skipper/eskip"
 	"github.com/zalando/skipper/eskipfile"
 	etcdclient "github.com/zalando/skipper/etcd"
 	innkeeperclient "github.com/zalando/skipper/innkeeper"
-	"io"
-	"io/ioutil"
-	"os"
 )
 
 type readClient interface {
@@ -55,7 +56,7 @@ func createReadClient(m *medium) (readClient, error) {
 		return &idsReader{ids: m.ids}, nil
 
 	default:
-		return nil, invalidInputType
+		return nil, errInvalidInputType
 	}
 }
 
@@ -104,7 +105,7 @@ func (r *inlineReader) LoadAndParseAll() ([]*eskip.RouteInfo, error) {
 func (r *idsReader) LoadAndParseAll() ([]*eskip.RouteInfo, error) {
 	routeInfos := make([]*eskip.RouteInfo, len(r.ids))
 	for i, id := range r.ids {
-		routeInfos[i] = &eskip.RouteInfo{Route: eskip.Route{Id: id}}
+		routeInfos[i] = &eskip.RouteInfo{Route: eskip.Route{ID: id}}
 	}
 
 	return routeInfos, nil

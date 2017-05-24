@@ -20,7 +20,7 @@ type basic struct {
 	realmDefinition string
 }
 
-func NewBasicAuth() *basicSpec {
+func NewBasicAuth() filters.Spec {
 	return &basicSpec{}
 }
 

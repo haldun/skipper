@@ -49,7 +49,7 @@ type (
 	}
 
 	jsonRoute struct {
-		Id         int64    `json:"id,omitempty"`
+		ID         int64    `json:"id,omitempty"`
 		Name       string   `json:"name,omitempty"`
 		ActivateAt string   `json:"activate_at,omitempty"`
 		CreatedAt  string   `json:"created_at,omitempty"`
@@ -165,7 +165,7 @@ func convertEndpoint(r *eskip.Route) string {
 func convertEskipToInnkeeper(routes []*eskip.Route) (data []*jsonRoute) {
 	for _, r := range routes {
 
-		id := eskip.GenerateIfNeeded(r.Id)
+		id := eskip.GenerateIfNeeded(r.ID)
 		host := convertHost(r)
 		method := convertMethod(r)
 		pathMatch := convertPathMatcher(r)

@@ -51,9 +51,9 @@ func validHeaderFieldByte(b byte) bool {
 
 // make sure we don't generate invalid headers
 func sanitize(input string) string {
-	toAscii := strconv.QuoteToASCII(input)
+	toASCII := strconv.QuoteToASCII(input)
 	var b bytes.Buffer
-	for _, i := range toAscii {
+	for _, i := range toASCII {
 		if validHeaderFieldByte(byte(i)) {
 			b.WriteRune(i)
 		}
@@ -62,7 +62,7 @@ func sanitize(input string) string {
 }
 
 // Strips the query parameters and optionally preserves them in the X-Query-Param-xyz headers.
-func (f *stripQuery) Request(ctx filters.FilterContext) {
+func (spec *stripQuery) Request(ctx filters.FilterContext) {
 	r := ctx.Request()
 	if r == nil {
 		return
@@ -73,7 +73,7 @@ func (f *stripQuery) Request(ctx filters.FilterContext) {
 		return
 	}
 
-	if !f.preserveAsHeader {
+	if !spec.preserveAsHeader {
 		url.RawQuery = ""
 		return
 	}
@@ -92,11 +92,11 @@ func (f *stripQuery) Request(ctx filters.FilterContext) {
 }
 
 // Noop.
-func (f *stripQuery) Response(ctx filters.FilterContext) {}
+func (spec *stripQuery) Response(ctx filters.FilterContext) {}
 
 // Creates instances of the stripQuery filter. Accepts one optional parameter:
 // "true", in order to preserve the stripped parameters in the request header.
-func (mw *stripQuery) CreateFilter(config []interface{}) (filters.Filter, error) {
+func (spec *stripQuery) CreateFilter(config []interface{}) (filters.Filter, error) {
 	var preserveAsHeader = false
 	if len(config) == 1 {
 		preserveAsHeaderString, ok := config[0].(string)

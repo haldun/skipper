@@ -81,7 +81,7 @@ type Options struct {
 	KubernetesHTTPSRedirect bool
 
 	// API endpoint of the Innkeeper service, storing route definitions.
-	InnkeeperUrl string
+	InnkeeperURL string
 
 	// Fixed token for innkeeper authentication. (Used mainly in
 	// development environments.)
@@ -97,7 +97,7 @@ type Options struct {
 	InnkeeperInsecure bool
 
 	// OAuth2 URL for Innkeeper authentication.
-	OAuthUrl string
+	OAuthURL string
 
 	// Directory where oauth credentials are stored, with file names:
 	// client.json and user.json.
@@ -232,9 +232,9 @@ func createDataClients(o Options, auth innkeeper.Authentication) ([]routing.Data
 		clients = append(clients, f)
 	}
 
-	if o.InnkeeperUrl != "" {
+	if o.InnkeeperURL != "" {
 		ic, err := innkeeper.New(innkeeper.Options{
-			Address:          o.InnkeeperUrl,
+			Address:          o.InnkeeperURL,
 			Insecure:         o.InnkeeperInsecure,
 			Authentication:   auth,
 			PreRouteFilters:  o.InnkeeperPreRouteFilters,
@@ -363,7 +363,7 @@ func Run(o Options) error {
 	auth := innkeeper.CreateInnkeeperAuthentication(innkeeper.AuthOptions{
 		InnkeeperAuthToken:  o.InnkeeperAuthToken,
 		OAuthCredentialsDir: o.OAuthCredentialsDir,
-		OAuthUrl:            o.OAuthUrl,
+		OAuthURL:            o.OAuthURL,
 		OAuthScope:          o.OAuthScope})
 
 	// create data clients

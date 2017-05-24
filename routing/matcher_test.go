@@ -184,7 +184,7 @@ func generateRoutes(paths []string) []*Route {
 		// the path for the backend is fine here,
 		// because it is only used for checking the
 		// found routes
-		defs[i] = &eskip.Route{Id: fmt.Sprintf("route%d", i), Path: p, Backend: p}
+		defs[i] = &eskip.Route{ID: fmt.Sprintf("route%d", i), Path: p, Backend: p}
 	}
 
 	return processRouteDefs(Options{}, nil, defs)
@@ -648,7 +648,7 @@ func TestMatchPathTreeNoMatch(t *testing.T) {
 
 func TestMatchPathTree(t *testing.T) {
 	tree := &pathmux.Tree{}
-	pm0 := &pathMatcher{leaves: []*leafMatcher{&leafMatcher{route: &Route{Route: eskip.Route{Id: "1"}}}}}
+	pm0 := &pathMatcher{leaves: []*leafMatcher{&leafMatcher{route: &Route{Route: eskip.Route{ID: "1"}}}}}
 	pm1 := &pathMatcher{leaves: []*leafMatcher{&leafMatcher{}}}
 	err := tree.Add("/some/path", pm0)
 	if err != nil {
@@ -661,14 +661,14 @@ func TestMatchPathTree(t *testing.T) {
 
 	p, v := matchPathTree(tree, "/some/path", &leafRequestMatcher{&http.Request{}, ""})
 
-	if len(p) != 0 || v.route.Route.Id != "1" {
+	if len(p) != 0 || v.route.Route.ID != "1" {
 		t.Error("failed to match path", len(p))
 	}
 }
 
 func TestMatchPathTreeWithWildcards(t *testing.T) {
 	tree := &pathmux.Tree{}
-	pm0 := &pathMatcher{leaves: []*leafMatcher{&leafMatcher{route: &Route{Route: eskip.Route{Id: "1"}}}}}
+	pm0 := &pathMatcher{leaves: []*leafMatcher{&leafMatcher{route: &Route{Route: eskip.Route{ID: "1"}}}}}
 	pm1 := &pathMatcher{leaves: []*leafMatcher{&leafMatcher{}}}
 	err := tree.Add("/some/path/:param0/:param1", pm0)
 	if err != nil {
@@ -679,7 +679,7 @@ func TestMatchPathTreeWithWildcards(t *testing.T) {
 		t.Error(err)
 	}
 	p, v := matchPathTree(tree, "/some/path/and/params", &leafRequestMatcher{&http.Request{}, ""})
-	if len(p) != 2 || p["param0"] != "and" || p["param1"] != "params" || v.route.Route.Id != "1" {
+	if len(p) != 2 || p["param0"] != "and" || p["param1"] != "params" || v.route.Route.ID != "1" {
 		t.Error("failed to match path", len(p))
 	}
 }

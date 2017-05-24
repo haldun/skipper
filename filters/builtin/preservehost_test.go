@@ -67,7 +67,7 @@ func TestRequest(t *testing.T) {
 	for _, ti := range []struct {
 		msg             string
 		arg             string
-		backendUrl      string
+		backendURL      string
 		incomingHost    string
 		currentOutgoing string
 		checkHost       string
@@ -130,7 +130,7 @@ func TestRequest(t *testing.T) {
 	}} {
 		ctx := &filtertest.Context{
 			FRequest:      &http.Request{Host: ti.incomingHost},
-			FBackendUrl:   ti.backendUrl,
+			FBackendURL:   ti.backendURL,
 			FOutgoingHost: ti.currentOutgoing}
 		f, _ := PreserveHost().CreateFilter([]interface{}{ti.arg})
 		f.Request(ctx)

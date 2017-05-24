@@ -40,7 +40,7 @@ type incomingData struct {
 
 func (d *incomingData) log(l logging.Logger) {
 	for _, r := range d.upsertedRoutes {
-		l.Infof("route settings, %v, route: %v: %v", d.typ, r.Id, r)
+		l.Infof("route settings, %v, route: %v: %v", d.typ, r.ID, r)
 	}
 
 	for _, id := range d.deletedIds {
@@ -118,7 +118,7 @@ func applyIncoming(defs routeDefs, d *incomingData) routeDefs {
 
 	if d.typ == incomingReset || d.typ == incomingUpdate {
 		for _, def := range d.upsertedRoutes {
-			defs[def.Id] = def
+			defs[def.ID] = def
 		}
 	}
 
@@ -127,15 +127,15 @@ func applyIncoming(defs routeDefs, d *incomingData) routeDefs {
 
 // merges the route definitions from multiple data clients by route id
 func mergeDefs(defsByClient map[DataClient]routeDefs) []*eskip.Route {
-	mergeById := make(routeDefs)
+	mergeByID := make(routeDefs)
 	for _, defs := range defsByClient {
 		for id, def := range defs {
-			mergeById[id] = def
+			mergeByID[id] = def
 		}
 	}
 
 	var all []*eskip.Route
-	for _, def := range mergeById {
+	for _, def := range mergeByID {
 		all = append(all, def)
 	}
 
@@ -294,7 +294,7 @@ func processTreePredicates(r *Route, predicates []*eskip.Predicate) error {
 	}
 
 	if !validTreePredicates(predicates) {
-		return fmt.Errorf("multiple tree predicates (Path, PathSubtree) in the route: %s", r.Id)
+		return fmt.Errorf("multiple tree predicates (Path, PathSubtree) in the route: %s", r.ID)
 	}
 
 	for _, p := range predicates {

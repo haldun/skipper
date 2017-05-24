@@ -14,11 +14,11 @@ import (
 const duplicateHeaderPredicateErrorFmt = "duplicate header predicate: %s"
 
 var (
-	invalidPredicateArgError        = errors.New("invalid predicate arg")
-	invalidPredicateArgCountError   = errors.New("invalid predicate count arg")
-	duplicatePathTreePredicateError = errors.New("duplicate path tree predicate")
-	duplicateMethodPredicateError   = errors.New("duplicate method predicate")
-	errInvalidBackend               = errors.New("invalid backend")
+	errInvalidPredicateArg        = errors.New("invalid predicate arg")
+	errInvalidPredicateArgCount   = errors.New("invalid predicate count arg")
+	errDuplicatePathTreePredicate = errors.New("duplicate path tree predicate")
+	errDuplicateMethodPredicate   = errors.New("duplicate method predicate")
+	errInvalidBackend             = errors.New("invalid backend")
 )
 
 // Represents a matcher condition for incoming requests.
@@ -34,8 +34,13 @@ type matcher struct {
 type BackendType int
 
 const (
+	// NetworkBackend is a regular server backend.
 	NetworkBackend = iota
+
+	// ShuntBackend always send the same dummy response.
 	ShuntBackend
+
+	// LoopBackend triggers a reevaluation of routes with possibly updated request.
 	LoopBackend
 )
 
@@ -75,9 +80,9 @@ type Filter struct {
 
 // A Route object represents a parsed, in-memory route definition.
 type Route struct {
-	// Id of the route definition.
+	// ID of the route definition.
 	// E.g. route1: ...
-	Id string
+	ID string
 
 	// Deprecated, use Path Predicate
 	//
@@ -156,7 +161,7 @@ func (t BackendType) String() string {
 // Expects exactly n arguments of type string, or fails.
 func getStringArgs(n int, args []interface{}) ([]string, error) {
 	if len(args) != n {
-		return nil, invalidPredicateArgCountError
+		return nil, errInvalidPredicateArgCount
 	}
 
 	sargs := make([]string, n)
@@ -164,7 +169,7 @@ func getStringArgs(n int, args []interface{}) ([]string, error) {
 		if sa, ok := a.(string); ok {
 			sargs[i] = sa
 		} else {
-			return nil, invalidPredicateArgError
+			return nil, errInvalidPredicateArg
 		}
 	}
 
@@ -190,7 +195,7 @@ func applyPredicates(route *Route, proute *parsedRoute) error {
 		switch m.name {
 		case "Path":
 			if pathSet {
-				return duplicatePathTreePredicateError
+				return errDuplicatePathTreePredicate
 			}
 
 			if args, err = getStringArgs(1, m.args); err == nil {
@@ -207,7 +212,7 @@ func applyPredicates(route *Route, proute *parsedRoute) error {
 			}
 		case "Method":
 			if methodSet {
-				return duplicateMethodPredicateError
+				return errDuplicateMethodPredicate
 			}
 
 			if args, err = getStringArgs(1, m.args); err == nil {
@@ -251,7 +256,7 @@ func applyPredicates(route *Route, proute *parsedRoute) error {
 func newRouteDefinition(r *parsedRoute) (*Route, error) {
 	rd := &Route{}
 
-	rd.Id = r.id
+	rd.ID = r.id
 	rd.Filters = r.filters
 	rd.Shunt = r.shunt
 	rd.Backend = r.backend
@@ -302,7 +307,7 @@ func filtersToRoute(f string) string {
 	return fmt.Sprintf("* -> %s -> <shunt>", f)
 }
 
-// Parses a route expression or a routing document to a set of route definitions.
+// Parse parses a route expression or a routing document to a set of route definitions.
 func Parse(code string) ([]*Route, error) {
 	parsedRoutes, err := parse(code)
 	if err != nil {
@@ -322,7 +327,7 @@ func Parse(code string) ([]*Route, error) {
 	return routeDefinitions, nil
 }
 
-// Parses a filter chain into a list of parsed filter definitions.
+// ParseFilters parses a filter chain into a list of parsed filter definitions.
 func ParseFilters(f string) ([]*Filter, error) {
 	rs, err := parse(filtersToRoute(f))
 	if err != nil {
@@ -336,25 +341,24 @@ func ParseFilters(f string) ([]*Filter, error) {
 	return rs[0].filters, nil
 }
 
-const randomIdLength = 16
+const randomIDLength = 16
 
-var routeIdRx = regexp.MustCompile("\\W")
+var routeIDRx = regexp.MustCompile("\\W")
 
-// generate weak random id for a route if
-// it doesn't have one.
-func GenerateIfNeeded(existingId string) string {
-	if existingId != "" {
-		return existingId
+// GenerateIfNeeded generate weak random id for a route if it doesn't have one.
+func GenerateIfNeeded(existingID string) string {
+	if existingID != "" {
+		return existingID
 	}
 
 	// using this to avoid adding a new dependency.
-	id, err := flowid.NewFlowId(randomIdLength)
+	id, err := flowid.NewFlowID(randomIDLength)
 	if err != nil {
-		return existingId
+		return existingID
 	}
 
 	// replace characters that are not allowed
 	// for eskip route ids.
-	id = routeIdRx.ReplaceAllString(id, "x")
+	id = routeIDRx.ReplaceAllString(id, "x")
 	return "route" + id
 }

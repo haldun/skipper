@@ -10,8 +10,6 @@ import (
 	"github.com/zalando/skipper/filters"
 )
 
-const maxPipeBuffer = 16384
-
 type pipedResponse struct {
 	response   *http.Response
 	reader     *io.PipeReader
@@ -21,7 +19,7 @@ type pipedResponse struct {
 
 // Creates a response from a handler and a request.
 //
-// It calls the handler's ServeHTTP method with an internal response
+// It calls the handler's HTTP method with an internal response
 // writer that shares the status code, headers and the response body
 // with the returned response. It blocks until the handler calls the
 // response writer's WriteHeader, or starts writing the body, or
@@ -33,10 +31,10 @@ type pipedResponse struct {
 // 	var handler = http.StripPrefix(webRoot, http.FileServer(http.Dir(root)))
 //
 // 	func (f *myFilter) Request(ctx filters.FilterContext) {
-// 		serve.ServeHTTP(ctx, handler)
+// 		serve.HTTP(ctx, handler)
 // 	}
 //
-func ServeHTTP(ctx filters.FilterContext, h http.Handler) {
+func HTTP(ctx filters.FilterContext, h http.Handler) {
 	rsp := &http.Response{Header: make(http.Header)}
 	r, w := io.Pipe()
 	d := &pipedResponse{

@@ -47,9 +47,9 @@ func (spec *static) CreateFilter(config []interface{}) (filters.Filter, error) {
 }
 
 // Serves content from the file system and marks the request served.
-func (f *static) Request(ctx filters.FilterContext) {
-	serve.ServeHTTP(ctx, f.handler)
+func (spec *static) Request(ctx filters.FilterContext) {
+	serve.HTTP(ctx, spec.handler)
 }
 
 // Noop.
-func (f *static) Response(filters.FilterContext) {}
+func (spec *static) Response(filters.FilterContext) {}

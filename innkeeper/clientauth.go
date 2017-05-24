@@ -12,7 +12,7 @@ type Authentication interface {
 type AuthOptions struct {
 	InnkeeperAuthToken  string
 	OAuthCredentialsDir string
-	OAuthUrl            string
+	OAuthURL            string
 	OAuthScope          string
 }
 
@@ -28,5 +28,5 @@ func CreateInnkeeperAuthentication(o AuthOptions) Authentication {
 		return FixedToken(o.InnkeeperAuthToken)
 	}
 
-	return oauth.New(o.OAuthCredentialsDir, o.OAuthUrl, o.OAuthScope)
+	return oauth.New(o.OAuthCredentialsDir, o.OAuthURL, o.OAuthScope)
 }

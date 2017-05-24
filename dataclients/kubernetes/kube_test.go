@@ -74,7 +74,7 @@ func testPathRule(path, serviceName string, port backendPort) *pathRule {
 func testRule(host string, paths ...*pathRule) *rule {
 	return &rule{
 		Host: host,
-		Http: &httpRule{
+		HTTP: &httpRule{
 			Paths: paths,
 		},
 	}
@@ -157,7 +157,7 @@ func checkRoutes(t *testing.T, r []*eskip.Route, expected map[string]string) {
 	for id, backend := range expected {
 		var found bool
 		for _, ri := range r {
-			if ri.Id == id {
+			if ri.ID == id {
 				if ri.Backend != backend {
 					t.Error("invalid backend", ri.Backend, backend)
 					return
@@ -198,7 +198,7 @@ func checkIDs(t *testing.T, got []string, expected ...string) {
 
 func checkHealthcheck(t *testing.T, got []*eskip.Route, expected, healthy bool) {
 	for _, r := range got {
-		if r.Id != healthcheckRouteID {
+		if r.ID != healthcheckRouteID {
 			continue
 		}
 
@@ -555,7 +555,7 @@ func TestIngress(t *testing.T) {
 	t.Run("receives invalid ingress, parses the rest, gets fixed", func(t *testing.T) {
 		api.services = testServices()
 		api.ingresses.Items = testIngresses()
-		api.ingresses.Items[2].Spec.Rules[0].Http.Paths[0].Backend.ServicePort = backendPort{"not-existing"}
+		api.ingresses.Items[2].Spec.Rules[0].HTTP.Paths[0].Backend.ServicePort = backendPort{"not-existing"}
 		dc, err := New(Options{KubernetesURL: api.server.URL})
 		if err != nil {
 			t.Error(err)
@@ -619,7 +619,7 @@ func TestIngress(t *testing.T) {
 		}
 
 		api.ingresses.Items[0].Spec.DefaultBackend.ServicePort = backendPort{6363}
-		api.ingresses.Items[2].Spec.Rules[0].Http.Paths[0].Backend.ServicePort = backendPort{9999}
+		api.ingresses.Items[2].Spec.Rules[0].HTTP.Paths[0].Backend.ServicePort = backendPort{9999}
 
 		r, d, err := dc.LoadUpdate()
 		if err != nil || len(d) != 0 {
@@ -815,7 +815,7 @@ func TestIngress(t *testing.T) {
 			),
 		)
 
-		api.ingresses.Items[1].Spec.Rules[0].Http.Paths[0].Backend.ServicePort = backendPort{9999}
+		api.ingresses.Items[1].Spec.Rules[0].HTTP.Paths[0].Backend.ServicePort = backendPort{9999}
 		api.ingresses.Items[2].Spec.Rules = api.ingresses.Items[2].Spec.Rules[:1]
 
 		r, d, err := dc.LoadUpdate()
@@ -912,7 +912,7 @@ func TestConvertPathRuleTraffic(t *testing.T) {
 				},
 			},
 			route: &eskip.Route{
-				Id:          routeID("", "", "", "", "foo"),
+				ID:          routeID("", "", "", "", "foo"),
 				PathRegexps: nil,
 				Backend:     "backend",
 				Predicates: []*eskip.Predicate{
@@ -933,7 +933,7 @@ func TestConvertPathRuleTraffic(t *testing.T) {
 				},
 			},
 			route: &eskip.Route{
-				Id:          routeID("", "", "", "", "foo"),
+				ID:          routeID("", "", "", "", "foo"),
 				PathRegexps: nil,
 				Backend:     "backend",
 			},
@@ -948,7 +948,7 @@ func TestConvertPathRuleTraffic(t *testing.T) {
 				},
 			},
 			route: &eskip.Route{
-				Id:          routeID("", "", "", "", "foo"),
+				ID:          routeID("", "", "", "", "foo"),
 				PathRegexps: nil,
 				Backend:     "backend",
 			},
@@ -1571,7 +1571,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				"foo": 59,
 			},
 			input: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1589,7 +1589,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				},
 			},
 			output: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1613,7 +1613,7 @@ func TestComputeBackendWeights(t *testing.T) {
 			msg:     `if two backends doesn't have any weight, they get equal amount of traffic.`,
 			weights: map[string]float64{},
 			input: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1631,7 +1631,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				},
 			},
 			output: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1659,7 +1659,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				"baz": 20,
 			},
 			input: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1683,7 +1683,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				},
 			},
 			output: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1717,7 +1717,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				"bar": 140,
 			},
 			input: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1735,7 +1735,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				},
 			},
 			output: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1762,7 +1762,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				"bar": 70,
 			},
 			input: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",
@@ -1786,7 +1786,7 @@ func TestComputeBackendWeights(t *testing.T) {
 				},
 			},
 			output: &rule{
-				Http: &httpRule{
+				HTTP: &httpRule{
 					Paths: []*pathRule{
 						{
 							Path: "",

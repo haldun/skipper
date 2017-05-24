@@ -46,7 +46,7 @@ func TestBlock(t *testing.T) {
 		quit := make(chan struct{})
 		ctx := &filtertest.Context{}
 		go func() {
-			ServeHTTP(ctx, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			HTTP(ctx, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				if ti.sleep > 0 {
 					time.Sleep(ti.sleep)
 				}
@@ -94,7 +94,7 @@ func TestBlock(t *testing.T) {
 func TestServe(t *testing.T) {
 	parts := []string{"foo", "bar", "baz"}
 	ctx := &filtertest.Context{FRequest: &http.Request{}}
-	ServeHTTP(ctx, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	HTTP(ctx, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r != ctx.Request() {
 			t.Error("invalid request object")
 		}
@@ -124,7 +124,7 @@ func TestStreamBody(t *testing.T) {
 	parts := []string{"foo", "bar", "baz"}
 	signal := make(chan int)
 	ctx := &filtertest.Context{}
-	ServeHTTP(ctx, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	HTTP(ctx, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		for i := range signal {
 			if i < len(parts) {

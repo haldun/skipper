@@ -134,15 +134,13 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func TestTeeEndToEndBody(t *testing.T) {
 	shadowHandler := newTestHandler(t, "shadow")
 	shadowServer := httptest.NewServer(shadowHandler)
-	shadowUrl := shadowServer.URL
 	defer shadowServer.Close()
 
 	originalHandler := newTestHandler(t, "original")
 	originalServer := httptest.NewServer(originalHandler)
-	originalUrl := originalServer.URL
 	defer originalServer.Close()
 
-	routeStr := fmt.Sprintf(`route1: * -> tee("%v") -> "%v";`, shadowUrl, originalUrl)
+	routeStr := fmt.Sprintf(`route1: * -> tee("%v") -> "%v";`, shadowServer.URL, originalServer.URL)
 
 	route, _ := eskip.Parse(routeStr)
 	registry := make(filters.Registry)

@@ -1,17 +1,3 @@
-// Copyright 2015 Zalando SE
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package eskip
 
 import (
@@ -55,11 +41,11 @@ const (
 )
 
 var (
-	invalidCharacter = errors.New("invalid character")
-	incompleteToken  = errors.New("incomplete token")
-	unexpectedToken  = errors.New("unexpected token")
-	void             = errors.New("void")
-	eof              = errors.New("eof")
+	errInvalidCharacter = errors.New("invalid character")
+	errIncompleteToken  = errors.New("incomplete token")
+	errUnexpectedToken  = errors.New("unexpected token")
+	errVoid             = errors.New("void")
+	errEOF              = errors.New("eof")
 )
 
 var fixedTokens = map[fixedScanner]int{
@@ -78,7 +64,7 @@ func (t token) String() string { return t.val }
 
 func (fs fixedScanner) scan(code string) (t token, rest string, err error) {
 	if len(code) < len(fs) {
-		err = unexpectedToken
+		err = errUnexpectedToken
 		return
 	}
 
@@ -154,7 +140,7 @@ func scanEscaped(delimiter byte, code string) ([]byte, string) {
 func scanRegexpLiteral(code string) (t token, rest string, err error) {
 	b, rest := scanEscaped('/', code[1:])
 	if len(rest) == 0 {
-		err = incompleteToken
+		err = errIncompleteToken
 		return
 	}
 
@@ -167,13 +153,13 @@ func scanRegexpLiteral(code string) (t token, rest string, err error) {
 func scanRegexpOrComment(code string) (t token, rest string, err error) {
 	if len(code) < 2 {
 		rest = code
-		err = invalidCharacter
+		err = errInvalidCharacter
 		return
 	}
 
 	if code[1] == '/' {
 		rest = scanComment(code)
-		err = void
+		err = errVoid
 		return
 	}
 
@@ -184,7 +170,7 @@ func scanRegexpOrComment(code string) (t token, rest string, err error) {
 func scanStringLiteral(delimiter byte, code string) (t token, rest string, err error) {
 	b, rest := scanEscaped(delimiter, code[1:])
 	if len(rest) == 0 {
-		err = incompleteToken
+		err = errIncompleteToken
 		return
 	}
 
@@ -217,7 +203,7 @@ func scanNumber(code string) (t token, rest string, err error) {
 	})
 
 	if isDecimalChar(b[len(b)-1]) {
-		err = incompleteToken
+		err = errIncompleteToken
 		return
 	}
 
@@ -234,7 +220,7 @@ func scanSymbol(code string) (t token, rest string, err error) {
 }
 
 func selectFixed(code string) scanner {
-	for fixed, _ := range fixedTokens {
+	for fixed := range fixedTokens {
 		if len(code) >= len(fixed) && strings.HasPrefix(code, string(fixed)) {
 			return fixed
 		}
@@ -280,18 +266,18 @@ func selectScanner(code string) scanner {
 func (l *eskipLex) next() (t token, err error) {
 	l.code = scanWhitespace(l.code)
 	if len(l.code) == 0 {
-		err = eof
+		err = errEOF
 		return
 	}
 
 	s := selectScanner(l.code)
 	if s == nil {
-		err = unexpectedToken
+		err = errUnexpectedToken
 		return
 	}
 
 	t, l.code, err = s.scan(l.code)
-	if err == void {
+	if err == errVoid {
 		return l.next()
 	}
 
@@ -304,7 +290,7 @@ func (l *eskipLex) next() (t token, err error) {
 
 func (l *eskipLex) Lex(lval *eskipSymType) int {
 	token, err := l.next()
-	if err == eof {
+	if err == errEOF {
 		return -1
 	}
 
@@ -318,7 +304,7 @@ func (l *eskipLex) Lex(lval *eskipSymType) int {
 }
 
 func (l *eskipLex) Error(err string) {
-	l.err = errors.New(fmt.Sprintf(
+	l.err = fmt.Errorf(
 		"parse failed after token %v, position %d: %s",
-		l.lastToken, l.initialLength-len(l.code), err))
+		l.lastToken, l.initialLength-len(l.code), err)
 }

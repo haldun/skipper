@@ -167,12 +167,12 @@ func (m *Metrics) MeasureFilterRequest(filterName string, start time.Time) {
 	m.measureSince(fmt.Sprintf(KeyFilterRequest, filterName), start)
 }
 
-func (m *Metrics) MeasureAllFiltersRequest(routeId string, start time.Time) {
-	m.measureSince(fmt.Sprintf(KeyFiltersRequest, routeId), start)
+func (m *Metrics) MeasureAllFiltersRequest(routeID string, start time.Time) {
+	m.measureSince(fmt.Sprintf(KeyFiltersRequest, routeID), start)
 }
 
-func (m *Metrics) MeasureBackend(routeId string, start time.Time) {
-	m.measureSince(fmt.Sprintf(KeyProxyBackend, routeId), start)
+func (m *Metrics) MeasureBackend(routeID string, start time.Time) {
+	m.measureSince(fmt.Sprintf(KeyProxyBackend, routeID), start)
 }
 
 func (m *Metrics) MeasureBackendHost(routeBackendHost string, start time.Time) {
@@ -185,12 +185,12 @@ func (m *Metrics) MeasureFilterResponse(filterName string, start time.Time) {
 	m.measureSince(fmt.Sprintf(KeyFilterResponse, filterName), start)
 }
 
-func (m *Metrics) MeasureAllFiltersResponse(routeId string, start time.Time) {
-	m.measureSince(fmt.Sprintf(KeyFiltersResponse, routeId), start)
+func (m *Metrics) MeasureAllFiltersResponse(routeID string, start time.Time) {
+	m.measureSince(fmt.Sprintf(KeyFiltersResponse, routeID), start)
 }
 
-func (m *Metrics) MeasureResponse(code int, method string, routeId string, start time.Time) {
-	m.measureSince(fmt.Sprintf(KeyResponse, code, method, routeId), start)
+func (m *Metrics) MeasureResponse(code int, method string, routeID string, start time.Time) {
+	m.measureSince(fmt.Sprintf(KeyResponse, code, method, routeID), start)
 }
 
 func hostForKey(h string) string {
@@ -199,9 +199,9 @@ func hostForKey(h string) string {
 	return h
 }
 
-func (m *Metrics) MeasureServe(routeId, host, method string, code int, start time.Time) {
+func (m *Metrics) MeasureServe(routeID, host, method string, code int, start time.Time) {
 	if m.options.EnableServeRouteMetrics {
-		m.measureSince(fmt.Sprintf(KeyServeRoute, routeId, method, code), start)
+		m.measureSince(fmt.Sprintf(KeyServeRoute, routeID, method, code), start)
 	}
 
 	if m.options.EnableServeHostMetrics {
@@ -225,12 +225,12 @@ func (m *Metrics) IncRoutingFailures() {
 	m.incCounter(KeyRouteFailure)
 }
 
-func (m *Metrics) IncErrorsBackend(routeId string) {
-	m.incCounter(fmt.Sprintf(KeyErrorsBackend, routeId))
+func (m *Metrics) IncErrorsBackend(routeID string) {
+	m.incCounter(fmt.Sprintf(KeyErrorsBackend, routeID))
 }
 
-func (m *Metrics) IncErrorsStreaming(routeId string) {
-	m.incCounter(fmt.Sprintf(KeyErrorsStreaming, routeId))
+func (m *Metrics) IncErrorsStreaming(routeID string) {
+	m.incCounter(fmt.Sprintf(KeyErrorsStreaming, routeID))
 }
 
 // This listener is used to expose the collected metrics.

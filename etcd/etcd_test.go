@@ -1,17 +1,3 @@
-// Copyright 2015 Zalando SE
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package etcd
 
 import (
@@ -51,7 +37,7 @@ func checkInitial(d []*eskip.Route) bool {
 
 	r := d[0]
 
-	if r.Id != "pdp" {
+	if r.ID != "pdp" {
 		return false
 	}
 
@@ -96,9 +82,9 @@ func checkInitial(d []*eskip.Route) bool {
 	return true
 }
 
-func checkBackend(d []*eskip.Route, routeId, backend string) bool {
+func checkBackend(d []*eskip.Route, routeID, backend string) bool {
 	for _, r := range d {
-		if r.Id == routeId {
+		if r.ID == routeID {
 			return r.Backend == backend
 		}
 	}
@@ -106,9 +92,9 @@ func checkBackend(d []*eskip.Route, routeId, backend string) bool {
 	return false
 }
 
-func checkDeleted(ids []string, routeId string) bool {
+func checkDeleted(ids []string, routeID string) bool {
 	for _, id := range ids {
-		if id == routeId {
+		if id == routeID {
 			return true
 		}
 	}
@@ -247,7 +233,7 @@ func TestValidatesDocument(t *testing.T) {
 	}
 
 	_, err = c.LoadAll()
-	if err != invalidResponseDocument {
+	if err != errInvalidResponseDocument {
 		t.Error("failed to fail")
 	}
 }
@@ -382,7 +368,7 @@ func TestUpsertNoId(t *testing.T) {
 	}
 
 	err = c.Upsert(&eskip.Route{})
-	if err != missingRouteId {
+	if err != errMissingRouteID {
 		t.Error("failed to fail")
 	}
 }
@@ -400,7 +386,7 @@ func TestUpsertNew(t *testing.T) {
 	}
 
 	err = c.Upsert(&eskip.Route{
-		Id:     "route1",
+		ID:     "route1",
 		Method: "POST",
 		Shunt:  true})
 	if err != nil {
@@ -408,7 +394,7 @@ func TestUpsertNew(t *testing.T) {
 	}
 
 	routes, err := c.LoadAll()
-	if len(routes) != 1 || routes[0].Id != "route1" {
+	if len(routes) != 1 || routes[0].ID != "route1" {
 		t.Error("failed to upsert route", len(routes))
 	}
 }
@@ -426,7 +412,7 @@ func TestUpsertExisting(t *testing.T) {
 	}
 
 	err = c.Upsert(&eskip.Route{
-		Id:     "route1",
+		ID:     "route1",
 		Method: "POST",
 		Shunt:  true})
 	if err != nil {
@@ -434,7 +420,7 @@ func TestUpsertExisting(t *testing.T) {
 	}
 
 	err = c.Upsert(&eskip.Route{
-		Id:     "route1",
+		ID:     "route1",
 		Method: "PUT",
 		Shunt:  true})
 	if err != nil {
@@ -455,7 +441,7 @@ func TestDeleteNoId(t *testing.T) {
 	}
 
 	err = c.Delete("")
-	if err != missingRouteId {
+	if err != errMissingRouteID {
 		t.Error("failed to fail")
 	}
 }
@@ -472,7 +458,7 @@ func TestDeleteNotExists(t *testing.T) {
 	}
 
 	err = c.Upsert(&eskip.Route{
-		Id:     "route1",
+		ID:     "route1",
 		Method: "POST",
 		Shunt:  true})
 	if err != nil {
@@ -502,7 +488,7 @@ func TestDelete(t *testing.T) {
 	}
 
 	err = c.Upsert(&eskip.Route{
-		Id:     "route1",
+		ID:     "route1",
 		Method: "POST",
 		Shunt:  true})
 	if err != nil {

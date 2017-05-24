@@ -13,7 +13,7 @@ import (
 type (
 	debugRequest struct {
 		Method        string      `json:"method"`
-		Uri           string      `json:"uri"`
+		URI           string      `json:"uri"`
 		Proto         string      `json:"proto"`
 		Header        http.Header `json:"header,omitempty"`
 		Host          string      `json:"host,omitempty"`
@@ -26,7 +26,7 @@ type (
 	}
 
 	debugDocument struct {
-		RouteId         string             `json:"route_id,omitempty"`
+		RouteID         string             `json:"route_id,omitempty"`
 		Route           string             `json:"route,omitempty"`
 		Incoming        *debugRequest      `json:"incoming,omitempty"`
 		Outgoing        *debugRequest      `json:"outgoing,omitempty"`
@@ -54,7 +54,7 @@ type debugInfo struct {
 func convertRequest(r *http.Request) *debugRequest {
 	return &debugRequest{
 		Method:        r.Method,
-		Uri:           r.RequestURI,
+		URI:           r.RequestURI,
 		Proto:         r.Proto,
 		Header:        r.Header,
 		Host:          r.Host,
@@ -78,7 +78,7 @@ func convertBody(body io.Reader) (string, string) {
 func convertDebugInfo(d *debugInfo) debugDocument {
 	doc := debugDocument{}
 	if d.route != nil {
-		doc.RouteId = d.route.Id
+		doc.RouteID = d.route.ID
 		doc.Route = d.route.String()
 		doc.Filters = d.route.Filters
 		doc.Predicates = d.route.Predicates

@@ -26,7 +26,7 @@ import (
 	"github.com/zalando/skipper/eskip"
 )
 
-// DataClient implementation.
+// Client implementation.
 type Client struct {
 	initDoc      string
 	routes       map[string]*eskip.Route
@@ -36,11 +36,11 @@ type Client struct {
 	signalUpdate chan int
 }
 
-// Creates a Client with an initial set of route definitions.
+// New creates a Client with an initial set of route definitions.
 func New(initial []*eskip.Route) *Client {
 	routes := make(map[string]*eskip.Route)
 	for _, r := range initial {
-		routes[r.Id] = r
+		routes[r.ID] = r
 	}
 
 	return &Client{
@@ -48,7 +48,7 @@ func New(initial []*eskip.Route) *Client {
 		signalUpdate: make(chan int)}
 }
 
-// Creates a Client with an initial set of route definitions in eskip
+// NewDoc creates a Client with an initial set of route definitions in eskip
 // format. If parsing the eskip document fails, returns an error.
 func NewDoc(doc string) (*Client, error) {
 	routes, err := eskip.Parse(doc)
@@ -59,7 +59,7 @@ func NewDoc(doc string) (*Client, error) {
 	return New(routes), nil
 }
 
-// Returns the initial/current set of route definitions.
+// LoadAll returns the initial/current set of route definitions.
 func (c *Client) LoadAll() ([]*eskip.Route, error) {
 	if c.failNext > 0 {
 		c.upsert, c.deletedIds = nil, nil
@@ -75,7 +75,7 @@ func (c *Client) LoadAll() ([]*eskip.Route, error) {
 	return routes, nil
 }
 
-// Returns the route definitions upserted/deleted since the last call to
+// LoadUpdate returns the route definitions upserted/deleted since the last call to
 // LoadAll.
 func (c *Client) LoadUpdate() ([]*eskip.Route, []string, error) {
 	<-c.signalUpdate
@@ -85,7 +85,7 @@ func (c *Client) LoadUpdate() ([]*eskip.Route, []string, error) {
 	}
 
 	for _, r := range c.upsert {
-		c.routes[r.Id] = r
+		c.routes[r.ID] = r
 	}
 
 	if c.failNext > 0 {
@@ -103,14 +103,14 @@ func (c *Client) LoadUpdate() ([]*eskip.Route, []string, error) {
 	return u, d, nil
 }
 
-// Updates the current set of routes with new/modified and deleted
+// Update updates the current set of routes with new/modified and deleted
 // route definitions.
 func (c *Client) Update(upsert []*eskip.Route, deletedIds []string) {
 	c.upsert, c.deletedIds = upsert, deletedIds
 	c.signalUpdate <- 42
 }
 
-// Updates the current set of routes with new/modified and deleted
+// UpdateDoc updates the current set of routes with new/modified and deleted
 // route definitions in eskip format. In case the parsing of the
 // document fails, it returns an error.
 func (c *Client) UpdateDoc(upsertDoc string, deletedIds []string) error {
@@ -123,7 +123,7 @@ func (c *Client) UpdateDoc(upsertDoc string, deletedIds []string) error {
 	return nil
 }
 
-// Sets the Client to fail on the next call to LoadAll or LoadUpdate.
+// FailNext sets the Client to fail on the next call to LoadAll or LoadUpdate.
 // Repeated call to FailNext will result the Client to fail as many
 // times as it was called.
 func (c *Client) FailNext() {

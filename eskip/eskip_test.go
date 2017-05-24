@@ -105,7 +105,7 @@ func TestParseRouteExpression(t *testing.T) {
 	}, {
 		"comment as last token",
 		"route: Any() -> <shunt>; // some comment",
-		&Route{Id: "route", BackendType: ShuntBackend, Shunt: true},
+		&Route{ID: "route", BackendType: ShuntBackend, Shunt: true},
 		false,
 	}, {
 		"catch all",
@@ -156,7 +156,7 @@ func TestParseRouteExpression(t *testing.T) {
 		t.Run(ti.msg, func(t *testing.T) {
 			stringMapKeys := func(m map[string]string) []string {
 				keys := make([]string, 0, len(m))
-				for k, _ := range m {
+				for k := range m {
 					keys = append(keys, k)
 				}
 
@@ -165,7 +165,7 @@ func TestParseRouteExpression(t *testing.T) {
 
 			stringsMapKeys := func(m map[string][]string) []string {
 				keys := make([]string, 0, len(m))
-				for k, _ := range m {
+				for k := range m {
 					keys = append(keys, k)
 				}
 
@@ -210,8 +210,8 @@ func TestParseRouteExpression(t *testing.T) {
 
 			r := routes[0]
 
-			if r.Id != ti.check.Id {
-				t.Error("id", r.Id, ti.check.Id)
+			if r.ID != ti.check.ID {
+				t.Error("id", r.ID, ti.check.ID)
 				return
 			}
 

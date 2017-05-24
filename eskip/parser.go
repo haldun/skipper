@@ -68,7 +68,7 @@ var eskipToknames = [...]string{
 }
 var eskipStatenames = [...]string{}
 
-const eskipEofCode = 1
+const eskipEOFCode = 1
 const eskipErrCode = 2
 const eskipInitialStackSize = 16
 
@@ -440,7 +440,7 @@ eskipdefault:
 			if eskipDebug >= 2 {
 				__yyfmt__.Printf("error recovery discards %s\n", eskipTokname(eskiptoken))
 			}
-			if eskiptoken == eskipEofCode {
+			if eskiptoken == eskipEOFCode {
 				goto ret1
 			}
 			eskiprcvr.char = -1

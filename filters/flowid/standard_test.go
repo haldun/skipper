@@ -41,7 +41,7 @@ func TestDeprecatedNewFlowID(t *testing.T) {
 	t.Parallel()
 	for expected := MinLength; expected <= MaxLength; expected++ {
 		t.Run(strconv.Itoa(expected), func(t *testing.T) {
-			id, err := NewFlowId(expected)
+			id, err := NewFlowID(expected)
 			if err != nil {
 				t.Errorf("failed to generate flowid using the standard generator: %v", err)
 			} else {
@@ -53,7 +53,7 @@ func TestDeprecatedNewFlowID(t *testing.T) {
 			}
 		})
 	}
-	_, err := NewFlowId(0)
+	_, err := NewFlowID(0)
 	if err == nil {
 		t.Error("request for an invalid flow id length (0) succeeded and it shouldn't")
 	}

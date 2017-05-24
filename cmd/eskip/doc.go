@@ -72,7 +72,7 @@ const (
 	// flag usage strings:
 	etcdUrlsUsage       = "urls of nodes in an etcd cluster"
 	etcdPrefixUsage     = "path prefix for routes in etcd"
-	innkeeperUrlUsage   = "url for the innkeeper service"
+	innkeeperURLUsage   = "url for the innkeeper service"
 	oauthTokenUsage     = "oauth token used to authenticate to innkeeper"
 	inlineRoutesUsage   = "inline: routes in eskip format"
 	inlineIdsUsage      = "inline ids: comma separated route ids"

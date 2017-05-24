@@ -123,7 +123,7 @@ func New(o Options) (*Client, error) {
 }
 
 // Converts a set of Innkeeper route definitions to their eskip representation.
-func convertJsonToEskip(data []*routeData, prependFilters, appendFilters []*eskip.Filter) ([]*eskip.Route, []string, string) {
+func convertJSONToEskip(data []*routeData, prependFilters, appendFilters []*eskip.Filter) ([]*eskip.Route, []string, string) {
 	var (
 		routes      []*eskip.Route
 		deleted     []string
@@ -155,7 +155,7 @@ func convertJsonToEskip(data []*routeData, prependFilters, appendFilters []*eski
 }
 
 // Parses an Innkeeper API error message and returns its type.
-func parseApiError(r io.Reader) (string, error) {
+func parseAPIError(r io.Reader) (string, error) {
 	message, err := ioutil.ReadAll(r)
 
 	if err != nil {
@@ -171,7 +171,7 @@ func parseApiError(r io.Reader) (string, error) {
 }
 
 // Checks whether an API error is authentication/authorization related.
-func isApiAuthError(error string) bool {
+func isAPIAuthError(error string) bool {
 	aerr := authErrorType(error)
 	return aerr == authErrorAuthorization || aerr == authErrorMissingCredentials || aerr == authErrorAuthentication
 }
@@ -194,16 +194,16 @@ func (c *Client) authenticate() error {
 
 // Checks if an http response status indicates an error, and returns an error
 // object if it does.
-func getHttpError(r *http.Response) (error, bool) {
+func getHTTPError(r *http.Response) (bool, error) {
 	switch {
 	case r.StatusCode < http.StatusBadRequest:
-		return nil, false
+		return false, nil
 	case r.StatusCode < http.StatusInternalServerError:
-		return fmt.Errorf("innkeeper request failed: %s", r.Status), true
+		return true, fmt.Errorf("innkeeper request failed: %s", r.Status)
 	case r.StatusCode < 600:
-		return fmt.Errorf("innkeeper error: %s", r.Status), true
+		return true, fmt.Errorf("innkeeper error: %s", r.Status)
 	default:
-		return fmt.Errorf("unexpected error: %d - %s", r.StatusCode, r.Status), true
+		return true, fmt.Errorf("unexpected error: %d - %s", r.StatusCode, r.Status)
 	}
 }
 
@@ -239,7 +239,7 @@ func (c *Client) writeRoute(url string, route *jsonRoute) error {
 	if response.StatusCode == http.StatusUnauthorized || response.StatusCode == http.StatusForbidden ||
 		response.StatusCode == http.StatusBadRequest {
 
-		apiError, err := parseApiError(response.Body)
+		apiError, err := parseAPIError(response.Body)
 		if err != nil {
 			return err
 		}
@@ -269,12 +269,12 @@ func (c *Client) requestData(authRetry bool, url string) ([]*routeData, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusUnauthorized || response.StatusCode == http.StatusForbidden {
-		apiError, err := parseApiError(response.Body)
+		apiError, err := parseAPIError(response.Body)
 		if err != nil {
 			return nil, err
 		}
 
-		if !isApiAuthError(apiError) {
+		if !isAPIAuthError(apiError) {
 			return nil, fmt.Errorf("unknown authentication error: %s", apiError)
 		}
 
@@ -290,7 +290,7 @@ func (c *Client) requestData(authRetry bool, url string) ([]*routeData, error) {
 		return c.requestData(false, url)
 	}
 
-	if err, hasErr := getHttpError(response); hasErr {
+	if hasErr, err := getHTTPError(response); hasErr {
 		return nil, err
 	}
 
@@ -329,7 +329,7 @@ func (c *Client) LoadAll() ([]*eskip.Route, error) {
 		return nil, err
 	}
 
-	routes, _, lastChanged := convertJsonToEskip(d, c.prependFilters, c.appendFilters)
+	routes, _, lastChanged := convertJSONToEskip(d, c.prependFilters, c.appendFilters)
 	if lastChanged > c.lastChanged {
 		c.lastChanged = lastChanged
 	}
@@ -344,7 +344,7 @@ func (c *Client) LoadUpdate() ([]*eskip.Route, []string, error) {
 		return nil, nil, err
 	}
 
-	routes, deleted, lastChanged := convertJsonToEskip(d, c.prependFilters, c.appendFilters)
+	routes, deleted, lastChanged := convertJSONToEskip(d, c.prependFilters, c.appendFilters)
 	if lastChanged > c.lastChanged {
 		c.lastChanged = lastChanged
 	}

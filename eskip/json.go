@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-func marshalJsonPredicates(r *Route) []*Predicate {
+func marshalJSONPredicates(r *Route) []*Predicate {
 	rjf := make([]*Predicate, 0, len(r.Predicates))
 
 	if r.Method != "" {
@@ -92,14 +92,14 @@ func (r *Route) MarshalJSON() ([]byte, error) {
 	e.SetEscapeHTML(false)
 
 	if err := e.Encode(&struct {
-		Id         string       `json:"id"`
+		ID         string       `json:"id"`
 		Backend    string       `json:"backend"`
 		Predicates []*Predicate `json:"predicates"`
 		Filters    []*Filter    `json:"filters"`
 	}{
-		Id:         r.Id,
+		ID:         r.ID,
 		Backend:    backend,
-		Predicates: marshalJsonPredicates(r),
+		Predicates: marshalJSONPredicates(r),
 		Filters:    filters,
 	}); err != nil {
 		return nil, err

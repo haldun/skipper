@@ -31,7 +31,7 @@ func routesDiffer(left, right *eskip.Route) bool {
 func mapRoutes(routes []*eskip.Route) routeMap {
 	m := make(routeMap)
 	for _, r := range routes {
-		m[r.Id] = r
+		m[r.ID] = r
 	}
 
 	return m
@@ -42,7 +42,7 @@ func takeDiff(ref []*eskip.Route, routes []*eskip.Route) []*eskip.Route {
 	mref := mapRoutes(ref)
 	var diff []*eskip.Route
 	for _, r := range routes {
-		if rr, exists := mref[r.Id]; !exists || routesDiffer(rr, r) {
+		if rr, exists := mref[r.ID]; !exists || routesDiffer(rr, r) {
 			diff = append(diff, r)
 		}
 	}
@@ -97,7 +97,7 @@ func resetCmd(a cmdArgs) error {
 	// delete routes from existing that were not upserted:
 	rm := mapRoutes(routes)
 	notSet := func(r *eskip.Route) bool {
-		_, set := rm[r.Id]
+		_, set := rm[r.ID]
 		return !set
 	}
 

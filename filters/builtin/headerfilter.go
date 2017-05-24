@@ -157,30 +157,30 @@ func (spec *headerFilter) CreateFilter(config []interface{}) (filters.Filter, er
 	return &headerFilter{typ: spec.typ, key: key, value: value}, err
 }
 
-func (f *headerFilter) Request(ctx filters.FilterContext) {
-	switch f.typ {
+func (spec *headerFilter) Request(ctx filters.FilterContext) {
+	switch spec.typ {
 	case setRequestHeader:
-		ctx.Request().Header.Set(f.key, f.value)
-		if strings.ToLower(f.key) == "host" {
-			ctx.SetOutgoingHost(f.value)
+		ctx.Request().Header.Set(spec.key, spec.value)
+		if strings.ToLower(spec.key) == "host" {
+			ctx.SetOutgoingHost(spec.value)
 		}
 	case appendRequestHeader, depRequestHeader:
-		ctx.Request().Header.Add(f.key, f.value)
-		if strings.ToLower(f.key) == "host" {
-			ctx.SetOutgoingHost(f.value)
+		ctx.Request().Header.Add(spec.key, spec.value)
+		if strings.ToLower(spec.key) == "host" {
+			ctx.SetOutgoingHost(spec.value)
 		}
 	case dropRequestHeader:
-		ctx.Request().Header.Del(f.key)
+		ctx.Request().Header.Del(spec.key)
 	}
 }
 
-func (f *headerFilter) Response(ctx filters.FilterContext) {
-	switch f.typ {
+func (spec *headerFilter) Response(ctx filters.FilterContext) {
+	switch spec.typ {
 	case setResponseHeader:
-		ctx.Response().Header.Set(f.key, f.value)
+		ctx.Response().Header.Set(spec.key, spec.value)
 	case appendResponseHeader, depResponseHeader:
-		ctx.Response().Header.Add(f.key, f.value)
+		ctx.Response().Header.Add(spec.key, spec.value)
 	case dropResponseHeader:
-		ctx.Response().Header.Del(f.key)
+		ctx.Response().Header.Del(spec.key)
 	}
 }

@@ -17,15 +17,16 @@ package main
 import (
 	"bytes"
 	"errors"
-	"github.com/zalando/skipper/etcd/etcdtest"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/zalando/skipper/etcd/etcdtest"
 )
 
 const testStdinName = "testStdin"
 
-var ioError = errors.New("io error")
+var errIO = errors.New("io error")
 
 func preserveStdin(f *os.File, action func()) {
 	f, os.Stdin = os.Stdin, f
@@ -64,7 +65,7 @@ func withFile(name string, content string, action func(f *os.File)) error {
 		return nil
 	}
 
-	return ioError
+	return errIO
 }
 
 func withStdin(content string, action func()) error {
@@ -154,7 +155,7 @@ func TestCheckEtcdInvalid(t *testing.T) {
 	}
 
 	err = checkCmd(cmdArgs{in: &medium{typ: etcd, urls: urls, path: "/skippertest"}})
-	if err != invalidRouteExpression {
+	if err != errInvalidRouteExpression {
 		t.Error("failed to fail properly")
 	}
 }

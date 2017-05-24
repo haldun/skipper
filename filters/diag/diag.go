@@ -121,9 +121,9 @@ func (r *random) CreateFilter(args []interface{}) (filters.Filter, error) {
 
 	if l, ok := args[0].(float64); ok {
 		return &random{int(l)}, nil
-	} else {
-		return nil, filters.ErrInvalidFilterParameters
 	}
+
+	return nil, filters.ErrInvalidFilterParameters
 }
 
 func (r *random) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
@@ -149,7 +149,7 @@ func (r *random) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (r *random) Request(ctx filters.FilterContext) {
-	serve.ServeHTTP(ctx, r)
+	serve.HTTP(ctx, r)
 }
 
 func (r *random) Response(ctx filters.FilterContext) {}

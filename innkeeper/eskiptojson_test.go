@@ -31,7 +31,7 @@ func TestConvertPathMatcherEmpty(t *testing.T) {
 	route := &eskip.Route{}
 
 	matcher := convertPathMatcher(route)
-	var expectedMatcher *pathMatcher = nil
+	var expectedMatcher *pathMatcher
 	assert.Equal(t, expectedMatcher, matcher)
 }
 
@@ -151,7 +151,7 @@ func TestConvertEndpointEmpty(t *testing.T) {
 func TestConvertEskipToInnkeeper(t *testing.T) {
 
 	route := []*eskip.Route{{
-		Id:            "theid",
+		ID:            "theid",
 		HostRegexps:   []string{"www.matcher.com"},
 		Method:        "GET",
 		PathRegexps:   []string{"/hello*"},
@@ -173,7 +173,7 @@ func TestConvertEskipToInnkeeper(t *testing.T) {
 
 func TestEskipToInnkeeperMinimal(t *testing.T) {
 	route := []*eskip.Route{{
-		Id:     "theid",
+		ID:     "theid",
 		Method: "GET"}}
 
 	routes := convertEskipToInnkeeper(route)

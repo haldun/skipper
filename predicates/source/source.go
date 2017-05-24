@@ -43,7 +43,7 @@ import (
 
 const Name = "Source"
 
-var InvalidArgsError = errors.New("invalid arguments")
+var ErrInvalidArgs = errors.New("invalid arguments")
 
 type spec struct{}
 
@@ -59,7 +59,7 @@ func (s *spec) Name() string {
 
 func (s *spec) Create(args []interface{}) (routing.Predicate, error) {
 	if len(args) == 0 {
-		return nil, InvalidArgsError
+		return nil, ErrInvalidArgs
 	}
 
 	p := &predicate{}
@@ -73,12 +73,12 @@ func (s *spec) Create(args []interface{}) (routing.Predicate, error) {
 			_, net, err := net.ParseCIDR(netmask)
 
 			if err != nil {
-				return nil, InvalidArgsError
+				return nil, ErrInvalidArgs
 			}
 
 			p.acceptedSourceNets = append(p.acceptedSourceNets, *net)
 		} else {
-			return nil, InvalidArgsError
+			return nil, ErrInvalidArgs
 		}
 	}
 

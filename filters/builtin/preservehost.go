@@ -45,15 +45,15 @@ func (s *spec) CreateFilter(args []interface{}) (filters.Filter, error) {
 
 	if a, ok := args[0].(string); ok && a == "true" || a == "false" {
 		return filter(a == "true"), nil
-	} else {
-		return nil, filters.ErrInvalidFilterParameters
 	}
+
+	return nil, filters.ErrInvalidFilterParameters
 }
 
 func (preserve filter) Response(_ filters.FilterContext) {}
 
 func (preserve filter) Request(ctx filters.FilterContext) {
-	u, err := url.Parse(ctx.BackendUrl())
+	u, err := url.Parse(ctx.BackendURL())
 	if err != nil {
 		log.Error("failed to parse backend host in preserveHost filter", err)
 		return

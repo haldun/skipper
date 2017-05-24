@@ -76,7 +76,7 @@ func testPathMatchVariant(t *testing.T, path string, v pathSpecVariant, rt *Rout
 	r, p := rt.Route(&http.Request{URL: &url.URL{Path: path}})
 
 	if r != nil && v.route == "" {
-		t.Error(path, "found route when should not", r.Id)
+		t.Error(path, "found route when should not", r.ID)
 		return
 	}
 
@@ -85,8 +85,8 @@ func testPathMatchVariant(t *testing.T, path string, v pathSpecVariant, rt *Rout
 		return
 	}
 
-	if r != nil && r.Id != v.route {
-		t.Error(path, "found invalid route", r.Id, v.route)
+	if r != nil && r.ID != v.route {
+		t.Error(path, "found invalid route", r.ID, v.route)
 		return
 	}
 

@@ -58,8 +58,8 @@ func ExampleNewDoc() {
 func DisabledExampleClient_Update() {
 	// create a data client:
 	dc := testdataclient.New([]*eskip.Route{
-		{Id: "route1", Path: "/some/path", Backend: "https://www1.example.org"},
-		{Id: "route2", Path: "/some/path", Backend: "https://www2.example.org"}})
+		{ID: "route1", Path: "/some/path", Backend: "https://www1.example.org"},
+		{ID: "route2", Path: "/some/path", Backend: "https://www2.example.org"}})
 
 	// check initial routes:
 	routes, err := dc.LoadAll()
@@ -76,7 +76,7 @@ func DisabledExampleClient_Update() {
 	// send an update:
 	go func() {
 		dc.Update(
-			[]*eskip.Route{{Id: "route1", Path: "/some/path", Backend: "https://mod.example.org"}},
+			[]*eskip.Route{{ID: "route1", Path: "/some/path", Backend: "https://mod.example.org"}},
 			[]string{"route2"})
 	}()
 

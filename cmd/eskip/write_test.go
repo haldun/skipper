@@ -72,7 +72,7 @@ func TestUpsertGeneratesId(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(routes) != 1 || routes[0].Id == "" {
+	if len(routes) != 1 || routes[0].ID == "" {
 		t.Error("upsert failed")
 	}
 }
@@ -92,7 +92,7 @@ func TestUpsertUsesId(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(routes) != 1 || routes[0].Id != "route1" {
+	if len(routes) != 1 || routes[0].ID != "route1" {
 		t.Error("upsert failed")
 	}
 }
@@ -164,7 +164,7 @@ func TestReset(t *testing.T) {
 	for _, id := range []string{"route2", "route3"} {
 		found := false
 		for _, r := range routes {
-			if r.Id != id {
+			if r.ID != id {
 				continue
 			}
 

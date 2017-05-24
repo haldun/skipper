@@ -52,7 +52,7 @@ func newRedirectTest(t *testing.T, redirectEnabled bool) (*redirectTest, error) 
 
 	ingress := i.Items[1]
 	rule := ingress.Spec.Rules[0]
-	service := s[ingress.Metadata.Namespace][rule.Http.Paths[0].Backend.ServiceName].Spec
+	service := s[ingress.Metadata.Namespace][rule.HTTP.Paths[0].Backend.ServiceName].Spec
 	fallbackService := s[i.Items[0].Metadata.Namespace][i.Items[0].Spec.DefaultBackend.ServiceName].Spec
 	backend := fmt.Sprintf("http://%s:%d", service.ClusterIP, service.Ports[0].Port)
 	fallbackBackend := fmt.Sprintf("http://%s:%d", fallbackService.ClusterIP, fallbackService.Ports[0].Port)
@@ -70,7 +70,7 @@ func newRedirectTest(t *testing.T, redirectEnabled bool) (*redirectTest, error) 
 func (rt *redirectTest) testRedirectRoute(req *http.Request, expectedID, expectedBackend string) bool {
 	route, _ := rt.router.Route(req)
 	switch {
-	case expectedID != "" && route.Id != expectedID:
+	case expectedID != "" && route.ID != expectedID:
 		return false
 	case expectedBackend != "" && route.Backend != expectedBackend:
 		return false
@@ -84,7 +84,7 @@ func (rt *redirectTest) testRedirectRoute(req *http.Request, expectedID, expecte
 func (rt *redirectTest) testNormalHTTPS(expectedID, expectedBackend string) {
 	httpsRequest := &http.Request{
 		Host: rt.rule.Host,
-		URL:  &url.URL{Path: rt.rule.Http.Paths[0].Path},
+		URL:  &url.URL{Path: rt.rule.HTTP.Paths[0].Path},
 		Header: http.Header{
 			"Host": []string{rt.rule.Host},
 		},
@@ -98,7 +98,7 @@ func (rt *redirectTest) testNormalHTTPS(expectedID, expectedBackend string) {
 func (rt *redirectTest) testRedirectHTTP(expectedID, expectedBackend string) {
 	httpRequest := &http.Request{
 		Host: rt.rule.Host,
-		URL:  &url.URL{Path: rt.rule.Http.Paths[0].Path},
+		URL:  &url.URL{Path: rt.rule.HTTP.Paths[0].Path},
 		Header: http.Header{
 			"Host":              []string{rt.rule.Host},
 			"X-Forwarded-Proto": []string{"http"},

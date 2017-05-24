@@ -18,8 +18,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/zalando/skipper/eskip"
 	"io/ioutil"
+
+	"github.com/zalando/skipper/eskip"
 )
 
 type loadResult struct {
@@ -27,7 +28,7 @@ type loadResult struct {
 	parseErrors map[string]error
 }
 
-var invalidRouteExpression = errors.New("one or more invalid route expressions")
+var errInvalidRouteExpression = errors.New("one or more invalid route expressions")
 
 // store all loaded routes, even if invalid, and store the
 // parse errors if any.
@@ -36,7 +37,7 @@ func mapRouteInfo(allInfo []*eskip.RouteInfo) loadResult {
 	for i, info := range allInfo {
 		lr.routes[i] = &info.Route
 		if info.ParseError != nil {
-			lr.parseErrors[info.Id] = info.ParseError
+			lr.parseErrors[info.ID] = info.ParseError
 		}
 	}
 
@@ -65,7 +66,7 @@ func checkParseErrors(lr loadResult) error {
 		printStderr(id, perr)
 	}
 
-	return invalidRouteExpression
+	return errInvalidRouteExpression
 }
 
 // load, parse routes and print parse errors if any.
@@ -81,10 +82,10 @@ func loadRoutesChecked(in *medium) ([]*eskip.Route, error) {
 func checkRepeatedRouteIds(routes []*eskip.Route) error {
 	ids := map[string]bool{}
 	for _, route := range routes {
-		if ids[route.Id] {
-			return errors.New("Repeating route with id " + route.Id)
+		if ids[route.ID] {
+			return errors.New("Repeating route with id " + route.ID)
 		}
-		ids[route.Id] = true
+		ids[route.ID] = true
 	}
 	return nil
 }
@@ -112,7 +113,7 @@ func printCmd(a cmdArgs) error {
 		return err
 	}
 
-	if printJson {
+	if printJSON {
 		e := json.NewEncoder(stdout)
 		e.SetEscapeHTML(false)
 		if err := e.Encode(lr.routes); err != nil {
@@ -120,20 +121,20 @@ func printCmd(a cmdArgs) error {
 		}
 	} else {
 		for _, r := range lr.routes {
-			if perr, hasError := lr.parseErrors[r.Id]; hasError {
-				printStderr(r.Id, perr)
+			if perr, hasError := lr.parseErrors[r.ID]; hasError {
+				printStderr(r.ID, perr)
 			} else {
-				if r.Id == "" {
+				if r.ID == "" {
 					fmt.Fprintln(stdout, r.String())
 				} else {
-					fmt.Fprintf(stdout, "%s: %s;\n", r.Id, r.Print(pretty))
+					fmt.Fprintf(stdout, "%s: %s;\n", r.ID, r.Print(pretty))
 				}
 			}
 		}
 	}
 
 	if len(lr.parseErrors) > 0 {
-		return invalidRouteExpression
+		return errInvalidRouteExpression
 	}
 
 	return nil
@@ -187,10 +188,10 @@ func patchCmd(a cmdArgs) error {
 
 	for _, r := range lr {
 		r.Filters = append(pf, append(r.Filters, af...)...)
-		if r.Id == "" {
+		if r.ID == "" {
 			fmt.Fprintln(stdout, r.String())
 		} else {
-			fmt.Fprintf(stdout, "%s: %s;\n", r.Id, r.String())
+			fmt.Fprintf(stdout, "%s: %s;\n", r.ID, r.String())
 		}
 	}
 

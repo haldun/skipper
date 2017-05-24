@@ -47,11 +47,11 @@ const (
 	kubernetesURLUsage             = "kubernetes API base URL for the ingress data client; requires kubectl proxy running; omit if kubernetes-in-cluster is set to true"
 	kubernetesHealthcheckUsage     = "automatic healthcheck route for internal IPs with path /kube-system/healthz; valid only with kubernetes"
 	kubernetesHTTPSRedirectUsage   = "automatic HTTP->HTTPS redirect route; valid only with kubernetes"
-	innkeeperUrlUsage              = "API endpoint of the Innkeeper service, storing route definitions"
+	innkeeperURLUsage              = "API endpoint of the Innkeeper service, storing route definitions"
 	innkeeperAuthTokenUsage        = "fixed token for innkeeper authentication"
 	innkeeperPreRouteFiltersUsage  = "filters to be prepended to each route loaded from Innkeeper"
 	innkeeperPostRouteFiltersUsage = "filters to be appended to each route loaded from Innkeeper"
-	oauthUrlUsage                  = "OAuth2 URL for Innkeeper authentication"
+	oauthURLUsage                  = "OAuth2 URL for Innkeeper authentication"
 	oauthCredentialsDirUsage       = "directory where oauth credentials are stored: client.json and user.json"
 	oauthScopeUsage                = "the whitespace separated list of oauth scopes"
 	routesFileUsage                = "file containing static route definitions"
@@ -101,10 +101,10 @@ var (
 	kubernetesURL             string
 	kubernetesHealthcheck     bool
 	kubernetesHTTPSRedirect   bool
-	innkeeperUrl              string
+	innkeeperURL              string
 	sourcePollTimeout         int64
 	routesFile                string
-	oauthUrl                  string
+	oauthURL                  string
 	oauthScope                string
 	oauthCredentialsDir       string
 	innkeeperAuthToken        string
@@ -146,10 +146,10 @@ func init() {
 	flag.StringVar(&kubernetesURL, "kubernetes-url", "", kubernetesURLUsage)
 	flag.BoolVar(&kubernetesHealthcheck, "kubernetes-healthcheck", true, kubernetesHealthcheckUsage)
 	flag.BoolVar(&kubernetesHTTPSRedirect, "kubernetes-https-redirect", true, kubernetesHTTPSRedirectUsage)
-	flag.StringVar(&innkeeperUrl, "innkeeper-url", "", innkeeperUrlUsage)
+	flag.StringVar(&innkeeperURL, "innkeeper-url", "", innkeeperURLUsage)
 	flag.Int64Var(&sourcePollTimeout, "source-poll-timeout", defaultSourcePollTimeout, sourcePollTimeoutUsage)
 	flag.StringVar(&routesFile, "routes-file", "", routesFileUsage)
-	flag.StringVar(&oauthUrl, "oauth-url", "", oauthUrlUsage)
+	flag.StringVar(&oauthURL, "oauth-url", "", oauthURLUsage)
 	flag.StringVar(&oauthScope, "oauth-scope", "", oauthScopeUsage)
 	flag.StringVar(&oauthCredentialsDir, "oauth-credentials-dir", "", oauthCredentialsDirUsage)
 	flag.StringVar(&innkeeperAuthToken, "innkeeper-auth-token", "", innkeeperAuthTokenUsage)
@@ -187,10 +187,10 @@ func parseDurationFlag(ds string) (time.Duration, error) {
 
 	if i, serr := strconv.Atoi(ds); serr == nil {
 		return time.Duration(i) * time.Second, nil
-	} else {
-		// returning the first parse error as more informative
-		return 0, perr
 	}
+
+	// returning the first parse error as more informative
+	return 0, perr
 }
 
 func main() {
@@ -221,21 +221,21 @@ func main() {
 	}
 
 	options := skipper.Options{
-		Address:                   address,
-		EtcdUrls:                  eus,
-		EtcdPrefix:                etcdPrefix,
-		Kubernetes:                kubernetes,
+		Address:                  address,
+		EtcdUrls:                 eus,
+		EtcdPrefix:               etcdPrefix,
+		Kubernetes:               kubernetes,
 		KubernetesInCluster:       kubernetesInCluster,
 		KubernetesURL:             kubernetesURL,
 		KubernetesHealthcheck:     kubernetesHealthcheck,
 		KubernetesHTTPSRedirect:   kubernetesHTTPSRedirect,
-		InnkeeperUrl:              innkeeperUrl,
+		InnkeeperURL:              innkeeperURL,
 		SourcePollTimeout:         time.Duration(sourcePollTimeout) * time.Millisecond,
 		RoutesFile:                routesFile,
 		IdleConnectionsPerHost:    idleConnsPerHost,
 		CloseIdleConnsPeriod:      time.Duration(clsic) * time.Second,
 		IgnoreTrailingSlash:       false,
-		OAuthUrl:                  oauthUrl,
+		OAuthURL:                  oauthURL,
 		OAuthScope:                oauthScope,
 		OAuthCredentialsDir:       oauthCredentialsDir,
 		InnkeeperAuthToken:        innkeeperAuthToken,

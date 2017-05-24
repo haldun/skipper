@@ -345,7 +345,7 @@ func (c *Client) convertDefaultBackend(i *ingressItem) (*eskip.Route, bool, erro
 	}
 
 	r := &eskip.Route{
-		Id:      routeID(i.Metadata.Namespace, i.Metadata.Name, "", "", ""),
+		ID:      routeID(i.Metadata.Namespace, i.Metadata.Name, "", "", ""),
 		Backend: address,
 	}
 
@@ -379,7 +379,7 @@ func (c *Client) convertPathRule(ns, name, host string, prule *pathRule, service
 	}
 
 	r := &eskip.Route{
-		Id:          routeID(ns, name, host, prule.Path, prule.Backend.ServiceName),
+		ID:          routeID(ns, name, host, prule.Path, prule.Backend.ServiceName),
 		PathRegexps: pathExpressions,
 		Backend:     address,
 	}
@@ -428,7 +428,7 @@ func (c *Client) ingressToRoutes(items []*ingressItem) []*eskip.Route {
 		// We need this to avoid asking the k8s API for the same services
 		servicesURLs := make(map[string]string)
 		for _, rule := range i.Spec.Rules {
-			if rule.Http == nil {
+			if rule.HTTP == nil {
 				log.Warn("invalid ingress item: rule missing http definitions")
 				continue
 			}
@@ -441,7 +441,7 @@ func (c *Client) ingressToRoutes(items []*ingressItem) []*eskip.Route {
 			// update Traffic field for each backend
 			computeBackendWeights(backendWeights, rule)
 
-			for _, prule := range rule.Http.Paths {
+			for _, prule := range rule.HTTP.Paths {
 				if prule.Backend.Traffic > 0 {
 					r, err := c.convertPathRule(i.Metadata.Namespace, i.Metadata.Name, rule.Host, prule, servicesURLs)
 					if err != nil {
@@ -494,7 +494,7 @@ func computeBackendWeights(backendWeights map[string]float64, rule *rule) {
 
 	// get backend weight sum and count of backends for all paths
 	pathSumCount := make(map[string]*sumCount)
-	for _, path := range rule.Http.Paths {
+	for _, path := range rule.HTTP.Paths {
 		sc, ok := pathSumCount[path.Path]
 		if !ok {
 			sc = &sumCount{}
@@ -509,7 +509,7 @@ func computeBackendWeights(backendWeights map[string]float64, rule *rule) {
 	}
 
 	// calculate traffic weight for each backend
-	for _, path := range rule.Http.Paths {
+	for _, path := range rule.HTTP.Paths {
 		if sc, ok := pathSumCount[path.Path]; ok {
 			if weight, ok := backendWeights[path.Backend.ServiceName]; ok {
 				path.Backend.Traffic = weight / sc.sum
@@ -530,7 +530,7 @@ func computeBackendWeights(backendWeights map[string]float64, rule *rule) {
 func mapRoutes(r []*eskip.Route) map[string]*eskip.Route {
 	m := make(map[string]*eskip.Route)
 	for _, ri := range r {
-		m[ri.Id] = ri
+		m[ri.ID] = ri
 	}
 
 	return m
@@ -566,7 +566,7 @@ func healthcheckRoute(healthy bool) *eskip.Route {
 	}
 
 	return &eskip.Route{
-		Id: healthcheckRouteID,
+		ID: healthcheckRouteID,
 		Predicates: []*eskip.Predicate{{
 			Name: source.Name,
 			Args: internalIPs,
@@ -586,7 +586,7 @@ func httpRedirectRoute() *eskip.Route {
 	// the normal routes that may have max 2 predicates: path regexp
 	// and host.
 	return &eskip.Route{
-		Id: httpRedirectRouteID,
+		ID: httpRedirectRouteID,
 		Headers: map[string]string{
 			"X-Forwarded-Proto": "http",
 		},
@@ -613,6 +613,7 @@ func (c *Client) hasReceivedTerm() bool {
 	return c.termReceived
 }
 
+// LoadAll loads all the routes.
 func (c *Client) LoadAll() ([]*eskip.Route, error) {
 	log.Debug("loading all")
 	r, err := c.loadAndConvert()
@@ -636,6 +637,7 @@ func (c *Client) LoadAll() ([]*eskip.Route, error) {
 	return r, nil
 }
 
+// LoadUpdate loads updated routes.
 // TODO: implement a force reset after some time
 func (c *Client) LoadUpdate() ([]*eskip.Route, []string, error) {
 	log.Debugf("polling for updates")

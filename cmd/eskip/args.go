@@ -17,16 +17,17 @@ package main
 import (
 	"errors"
 	"flag"
-	"golang.org/x/crypto/ssh/terminal"
 	"net/url"
 	"os"
 	"strings"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 const (
 	etcdUrlsFlag       = "etcd-urls"
 	etcdPrefixFlag     = "etcd-prefix"
-	innkeeperUrlFlag   = "innkeeper-url"
+	innkeeperURLFlag   = "innkeeper-url"
 	oauthTokenFlag     = "oauth-token"
 	inlineRoutesFlag   = "routes"
 	inlineIdsFlag      = "ids"
@@ -40,7 +41,7 @@ const (
 
 	defaultEtcdUrls     = "http://127.0.0.1:2379,http://127.0.0.1:4001"
 	defaultEtcdPrefix   = "/skipper"
-	defaultInnkeeperUrl = "http://127.0.0.1:8080"
+	defaultInnkeeperURL = "http://127.0.0.1:8080"
 )
 
 // used to prevent flag.FlagSet of printing errors in the wrong place
@@ -51,15 +52,15 @@ func (w *noopWriter) Write(b []byte) (int, error) {
 }
 
 var (
-	invalidNumberOfArgs = errors.New("invalid number of args")
-	missingOAuthToken   = errors.New("missing OAuth token")
+	errInvalidNumberOfArgs = errors.New("invalid number of args")
+	errMissingOAuthToken   = errors.New("missing OAuth token")
 )
 
 // parsing vars for flags:
 var (
 	etcdUrls          string
 	etcdPrefix        string
-	innkeeperUrl      string
+	innkeeperURL      string
 	oauthToken        string
 	inlineRoutes      string
 	inlineRouteIds    string
@@ -69,7 +70,7 @@ var (
 	appendFiltersArg  string
 	appendFileArg     string
 	pretty            bool
-	printJson         bool
+	printJSON         bool
 )
 
 var (
@@ -88,7 +89,7 @@ func initFlags() {
 	flags.StringVar(&etcdUrls, etcdUrlsFlag, "", etcdUrlsUsage)
 	flags.StringVar(&etcdPrefix, etcdPrefixFlag, "", etcdPrefixUsage)
 
-	flags.StringVar(&innkeeperUrl, innkeeperUrlFlag, "", innkeeperUrlUsage)
+	flags.StringVar(&innkeeperURL, innkeeperURLFlag, "", innkeeperURLUsage)
 	flags.StringVar(&oauthToken, oauthTokenFlag, "", oauthTokenUsage)
 
 	flags.StringVar(&inlineRoutes, inlineRoutesFlag, "", inlineRoutesUsage)
@@ -102,7 +103,7 @@ func initFlags() {
 	flags.StringVar(&appendFileArg, appendFileFlag, "", appendFileUsage)
 
 	flags.BoolVar(&pretty, prettyFlag, false, prettyUsage)
-	flags.BoolVar(&printJson, jsonFlag, false, jsonUsage)
+	flags.BoolVar(&printJSON, jsonFlag, false, jsonUsage)
 }
 
 func init() {
@@ -159,20 +160,20 @@ func processEtcdArgs(etcdUrls, etcdPrefix string) (*medium, error) {
 		path: etcdPrefix}, nil
 }
 
-func processInnkeeperArgs(innkeeperUrl, oauthToken string) (*medium, error) {
-	if innkeeperUrl == "" && oauthToken == "" {
+func processInnkeeperArgs(innkeeperURL, oauthToken string) (*medium, error) {
+	if innkeeperURL == "" && oauthToken == "" {
 		return nil, nil
 	}
 
 	if oauthToken == "" {
-		return nil, missingOAuthToken
+		return nil, errMissingOAuthToken
 	}
 
-	if innkeeperUrl == "" {
-		innkeeperUrl = defaultInnkeeperUrl
+	if innkeeperURL == "" {
+		innkeeperURL = defaultInnkeeperURL
 	}
 
-	urls, err := stringsToUrls(innkeeperUrl)
+	urls, err := stringsToUrls(innkeeperURL)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +188,7 @@ func processInnkeeperArgs(innkeeperUrl, oauthToken string) (*medium, error) {
 func processFileArg() (*medium, error) {
 	nonFlagArgs := flags.Args()
 	if len(nonFlagArgs) > 1 {
-		return nil, invalidNumberOfArgs
+		return nil, errInvalidNumberOfArgs
 	}
 
 	if len(nonFlagArgs) == 0 {
@@ -243,7 +244,7 @@ func processArgs() ([]*medium, error) {
 
 	var media []*medium
 
-	innkeeperArg, err := processInnkeeperArgs(innkeeperUrl, oauthToken)
+	innkeeperArg, err := processInnkeeperArgs(innkeeperURL, oauthToken)
 
 	if err != nil {
 		return nil, err
